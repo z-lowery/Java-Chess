@@ -1,11 +1,6 @@
 package Board;
 
-import Pieces.Bishop;
-import Pieces.King;
-import Pieces.Knight;
-import Pieces.Pawn;
-import Pieces.Queen;
-import Pieces.Rook;
+import Pieces.*;
 
 import java.io.*;
 import java.util.*;
@@ -176,10 +171,10 @@ public class Tile extends JButton implements ActionListener {
 
                         if (tileCoordinate == 56 || tileCoordinate == 0) {
                             diff = 3;
-                            newRookCord = kingCord   -   1;
-                            newKingCord = kingCord   -   2;
+                            newRookCord = kingCord - 1;
+                            newKingCord = kingCord - 2;
                         } else if (tileCoordinate == 63 || tileCoordinate == 7) {
-                            diff =   -  2;
+                            diff = - 2;
                             newRookCord = kingCord + 1;
                             newKingCord = kingCord + 2;
                         }
@@ -223,7 +218,7 @@ public class Tile extends JButton implements ActionListener {
                             } else if (kingCord == 4) {
                                 Chessboard.pieceLocations.add(2);
                             }
-                        } else { // dif =   -  2
+                        } else { // dif = -2
                             if (kingCord == 60) {
                                 Chessboard.pieceLocations.add(62);
                             } else if (kingCord == 4) {

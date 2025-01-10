@@ -1,5 +1,14 @@
-## Project Explaination
+## What is this projecT?
 
-This is a personal project I did in prepreation for the programming class I would be going into during my first year at UW-Madison (junior year). I hadn't taken up Java since my freshman year as my sophmore year was focused on C and Assembly, so I thought it would be a good way to freshen up on some Java skills.
+This project is intended to be a fully working Java implementation of the game Chess.
 
-In the future I hope to improve code readability, specifically in the Tile class, and implement javafx to replace Jbuttons, Jframs, etc., 
+In the future I hope to improve code readability, specifically in the Tile class, and implement javafx to replace Jbuttons, Jframs, etc., and implement missing features.
+
+## Missing features
+1) Pawns can not En passant.
+2) The game still allows you to move any piece if the king is in check OR checkmate.
+3) There is no visible indication when the king is in check or checkmate.
+4) There is nothing forcing either player to wait for the other to make a move.
+
+## Known bugs
+1) In certain instances, an adjacent tile to the king will be incorrectly highlighted (indicating the king can move there) when the enemy king is actually threatening that tile. 
