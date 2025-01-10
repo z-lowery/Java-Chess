@@ -419,7 +419,7 @@ public class Tile extends JButton implements ActionListener {
     public void setImage (String label) throws IOException {
         // Gives chess icons to the correct tiles
         if (label != null) {
-            this.setIcon(fitImage("src\\main\\java\\com\\zanderlowery\\chessproject\\" + label + "_" + pieceColor + ".png"));
+            this.setIcon(fitImage("src\\" + label + "_" + pieceColor + ".png"));
         }
     }
 
