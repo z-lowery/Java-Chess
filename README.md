@@ -1,4 +1,4 @@
-## What is this projecT?
+## What is this project?
 
 This project is intended to be a fully working Java implementation of the game Chess.
 
