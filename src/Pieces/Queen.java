@@ -7,12 +7,12 @@ public class Queen implements Piece{
     Bishop bishop = new Bishop();
 
     @Override
-    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor, boolean clickedKing) {
+    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         ArrayList<Integer> highlightList = new ArrayList<>();
 
         // Call the rook and bishop calc move methods
-        highlightList.addAll(rook.calcMoves(pieceCoordinate, pieceColor, clickedKing));
-        highlightList.addAll(bishop.calcMoves(pieceCoordinate, pieceColor, clickedKing));
+        highlightList.addAll(rook.calcMoves(pieceCoordinate, pieceColor));
+        highlightList.addAll(bishop.calcMoves(pieceCoordinate, pieceColor));
 
         return highlightList;
     }

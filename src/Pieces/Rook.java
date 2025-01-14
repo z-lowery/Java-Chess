@@ -5,9 +5,10 @@ import java.util.ArrayList;
 
 public class Rook implements Piece {
     ArrayList<Integer> threatenList = new ArrayList<>();
+    boolean moved = false;
 
     @Override
-    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor, boolean clickedKing) {
+    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         int temp;
 
         // calc north moves
@@ -43,11 +44,7 @@ public class Rook implements Piece {
             temp += 8;
             if (checkIfOccupied(temp, pieceColor)) {
                 break;
-            } else if (clickedKing) {
-                if (Chessboard.tileList.get(temp).piece != null) {
-                    break;
-                }
-            }
+            } 
         }
         return threatenList;
     }

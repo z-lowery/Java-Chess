@@ -7,7 +7,7 @@ public class Knight implements Piece{
     ArrayList<Integer> threatenList = new ArrayList<>();
 
     @Override
-    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor, boolean clickedKing) {
+    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         // north
         if (pieceCoordinate > 15) {
             // top left

@@ -7,7 +7,7 @@ public class Pawn implements Piece{
     ArrayList<Integer> threatenList = new ArrayList<>();
 
     @Override
-    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor, boolean clickedKing) {
+    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         /*
         There is no way for a pawn to move back to a previous position, so if a pawn is moving from
            a square it started in, than it MUST be making its first move. The square it starts in will be a specific

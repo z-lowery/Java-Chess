@@ -7,10 +7,8 @@ import java.util.ArrayList;
 public class King implements Piece {
     ArrayList<Integer> threatenList = new ArrayList<>();
 
-    boolean castled = false;
-
     @Override
-    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor, boolean clickedKing) {
+    public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         // north
         if (pieceCoordinate > 7) {
             checkIfOccupied(pieceCoordinate - 8, pieceColor);
@@ -45,28 +43,30 @@ public class King implements Piece {
         }
 
         // castling
-        if (clickedKing
-                && (pieceCoordinate == 4 || pieceCoordinate == 60)
-                && (!Chessboard.tileList.get(pieceCoordinate).moved)
-        ) {
+        // if the king has not moved
+        if (!Chessboard.tileList.get(pieceCoordinate).moved) {
             int leftRookCord, rightRookCord, kingCord;
 
-            kingCord = pieceCoordinate;
+            kingCord = pieceCoordinate; // coordinate of the king
 
-            leftRookCord = kingCord - 4;
-            rightRookCord = kingCord + 3;
+            leftRookCord = kingCord - 4; // coordinate of the left rook
+            rightRookCord = kingCord + 3; // coordinate of the right rook
 
             Tile targetTile = Chessboard.tileList.get(leftRookCord); // left rook tile
+            
+            // if the left rook has not moved
             castleLeft: if (!targetTile.moved) {
                 // makes sure the king would not be castling out of check
                 if (pieceColor.equals("white") && Chessboard.tileList.get(kingCord).blackThreatened
                         || pieceColor.equals("black") && Chessboard.tileList.get(kingCord).whiteThreatened) {
                     break castleLeft;
                 }
+
                 // makes sure the squares between the king and the rook are vacant and not being threatened by enemy pieces
                 for (int j = leftRookCord + 1; j < kingCord; j++) {
                     targetTile = Chessboard.tileList.get(j);
                     if (targetTile.piece != null
+                            // handles the cases where the enemy is threatening a square between the king and the rook
                             || (pieceColor.equals("white") && targetTile.blackThreatened)
                             || (pieceColor.equals("black") && targetTile.whiteThreatened)) {
                         break castleLeft;

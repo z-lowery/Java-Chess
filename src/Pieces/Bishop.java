@@ -8,7 +8,7 @@ public class Bishop implements Piece{
     ArrayList<Integer> threatenList = new ArrayList<>();
 
     @Override
-     public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor, boolean clickedKing) {
+     public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         int temp;
         // calc north-east moves
         temp = pieceCoordinate;
