@@ -73,34 +73,28 @@ public class Tile extends JButton implements ActionListener {
         System.out.println("white threatened = " + whiteThreatened);
         System.out.println("piece color = " + pieceColor);
 
-        /*
-        If the tile clicked on is NOT highlighted. This would mean that you clicked on an empty tile OR a different
-        piece to move.
-         */
+        // If the tile clicked on is NOT highlighted. This would mean that you clicked on 
+        // an empty tile OR a different piece to move.
         if (!this.highlighted) {
             resetTileColors(); // resets the tile colors by clearing highlighted tiles.
 
-            /*
-            In the case that the user clicked on a different piece to move, it is important to store the below
-            data in case the next tile the user clicked on IS highlighted as these variables will be used.
-            */
+            // In the case that the user clicked on a different piece to move, it is important to store the below
+            // data in case the next tile the user clicked on IS highlighted as these variables will be used.
             lastPiece = this.piece; // piece = null if clicked an empty tile. Else, stores the piece on the tile.
             lastCord = this.tileCoordinate;
 
-            // sets clickedKing variable to true if the tile that was clicked on has a king on it
+            // Sets clickedKing variable to true if the tile that was clicked on has a king on it
             if (this.piece != null) {
                 if (this.piece.equals("king")) {
                     calcThreats();
                 }
             }
 
-            /*
-             creates a list of tiles that can be highlighted based on how a piece on the clicked tile moves
-             by calling that pieces' respective calcMoves() method
-             */
+            // Creates a list of tiles that can be highlighted based on how a piece on the clicked tile moves
+            // by calling that pieces' respective calcMoves() method.
             ArrayList<Integer> highlightTiles = calcMovesOfPiece(this.piece, this.tileCoordinate, this.pieceColor);
 
-            // stores the color of the piece that was clicked on to determine what pieces it can capture
+            // Stores the color of the piece that was clicked on to determine what pieces it can capture
             String pieceColor = this.pieceColor;
 
             if (piece != null) {
@@ -113,10 +107,10 @@ public class Tile extends JButton implements ActionListener {
                         // pawns capture and move to different tiles on the board. This is unlike other pieces
                         // that capture and move to the same tiles.
                         if(isPawn){
-                            // if the target tile is in front of the pawn
+                            // If the target tile is in front of the pawn
                             if(pawnForward(this, targetTile)){ 
                                 targetTile.setBackground(Color.magenta);
-                            // if the target tile is diagonal to the pawn and has an enemy piece
+                            // If the target tile is diagonal to the pawn and has an enemy piece
                             } else if (targetTile.piece != null) { 
                                 targetTile.setBackground(Color.red);
                             }
@@ -125,7 +119,7 @@ public class Tile extends JButton implements ActionListener {
                         // Handles any other piece 
                         else if (targetTile.piece == null) { // "if the tile is empty"
                                 targetTile.setBackground(Color.magenta);
-                        } else { // else if the tile contains an enemy piece
+                        } else { // if the tile contains an enemy piece
                             targetTile.setBackground(Color.red);
                         }
 
@@ -135,19 +129,14 @@ public class Tile extends JButton implements ActionListener {
                     }
                 }
             }
+        } 
+        
+        // If the tile that was clicked on IS highlighted, then the piece will move to that tile, possibly capturing a piece
+        else {
+            if (this.getBackground() == Color.magenta || this.getBackground() == Color.RED) { // Error handling 
+                Tile lastTile = Chessboard.tileList.get(lastCord); // tile that was clicked on before the current tile
 
-            /*
-            If the tile that was clicked on IS highlighted
-             */
-        } else {
-            if (this.getBackground() == Color.magenta || this.getBackground() == Color.RED) {
-                Tile lastTile = Chessboard.tileList.get(lastCord);
-
-                    /* ==================================== CASTLING STUFF ============================================
-                changes the 'moved' variable to track if any of the rooks or kings had made its first move for the
-                purposes of allowing or disallowing castling
-                    */
-                // handling of whether the rook moved yet or not is handled in the king class
+                // Handles the case when a king is castling
                 if (lastPiece != null && piece != null && lastPiece.equals("king") && piece.equals("rook")) {
                     int diff = 64, newRookCord = 64, newKingCord = 64;
                     int kingCord = 64;
@@ -218,7 +207,9 @@ public class Tile extends JButton implements ActionListener {
                             Chessboard.pieceLocations.add(6);
                         }
                     }
-                } else {
+                } 
+                
+                else {
                     try {
                         this.setImage(lastPiece);
                     } catch (IOException ex) {
