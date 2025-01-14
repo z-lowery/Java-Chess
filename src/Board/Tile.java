@@ -28,7 +28,7 @@ public class Tile extends JButton implements ActionListener {
     public boolean whiteThreatened = false; // used to track if the tile is threatened by a white piece on the board
     public boolean blackThreatened = false; // used to track if the tile is threatened by a black piece on the board
 
-    // indicates if a piece has moved from the tile. This variable is primarily used to determine if a king can castle
+    // indicates if a piece has moved from the tile. This variable only used to determine if a king can castle
     public boolean moved;
 
     public static String lastPiece; // stores the last piece that was clicked on (empty/no piece if null)
@@ -53,7 +53,7 @@ public class Tile extends JButton implements ActionListener {
         } else {
             this.setBackground(Color.lightGray);
         }
-        this.addActionListener(this); // runs certain code if the tile is clicked on.
+        this.addActionListener(this); // runs code if the tile is clicked on.
     }
 
     @Override
@@ -65,7 +65,6 @@ public class Tile extends JButton implements ActionListener {
         System.out.println("white threatened = " + whiteThreatened);
         System.out.println("piece color = " + pieceColor);*/
 
-        boolean castled = false; // tracks if a king has castled or not
         boolean clickedKing = false; // tracks if a king was clicked on. If true, will run different code.
 
         /*
@@ -90,7 +89,6 @@ public class Tile extends JButton implements ActionListener {
                     clickedKing = true;
                 }
             }
-
 
             /*
              creates a list of tiles that can be highlighted based on how a piece on the clicked tile moves
@@ -149,89 +147,82 @@ public class Tile extends JButton implements ActionListener {
             if (this.getBackground() == Color.magenta || this.getBackground() == Color.RED) {
                 Tile lastTile = Chessboard.tileList.get(lastCord);
 
-                     /* ==================================== CASTLING STUFF ============================================
-                    changes the 'moved' variable to track if any of the rooks or kings had made its first move for the
-                    purposes of allowing or disallowing castling
-                     */
-                if (lastPiece != null && piece != null) {
-                    // handling of whether the rook moved yet or not is handled in the king class
-                    if (lastPiece.equals("king") && piece.equals("rook")) {
-                        int diff = 64, newRookCord = 64, newKingCord = 64;
-                        int kingCord = 64;
-                        String color = lastTile.pieceColor;
+                    /* ==================================== CASTLING STUFF ============================================
+                changes the 'moved' variable to track if any of the rooks or kings had made its first move for the
+                purposes of allowing or disallowing castling
+                    */
+                // handling of whether the rook moved yet or not is handled in the king class
+                if (lastPiece != null && piece != null && lastPiece.equals("king") && piece.equals("rook")) {
+                    int diff = 64, newRookCord = 64, newKingCord = 64;
+                    int kingCord = 64;
+                    String color = lastTile.pieceColor;
 
-                        if (lastTile.pieceColor.equals("white")) {
-                            kingCord = 60;
-                        } else if (lastTile.pieceColor.equals("black")) {
-                            kingCord = 4;
-                        }
-
-                        Tile castlingKing = Chessboard.tileList.get(kingCord); // king that is casting
-                        Tile castlingRook = Chessboard.tileList.get(tileCoordinate); // rook that is casting
-
-                        if (tileCoordinate == 56 || tileCoordinate == 0) {
-                            diff = 3;
-                            newRookCord = kingCord - 1;
-                            newKingCord = kingCord - 2;
-                        } else if (tileCoordinate == 63 || tileCoordinate == 7) {
-                            diff = - 2;
-                            newRookCord = kingCord + 1;
-                            newKingCord = kingCord + 2;
-                        }
-
-                        Chessboard.tileList.get(newRookCord).piece = "rook";
-                        Chessboard.tileList.get(newRookCord).pieceColor = color;
-                        try {
-                            Chessboard.tileList.get(newRookCord).setImage("rook");
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                        Chessboard.tileList.get(newKingCord).piece = "king";
-                        Chessboard.tileList.get(newKingCord).pieceColor = color;
-                        try {
-                            Chessboard.tileList.get(newKingCord).setImage("king");
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                        if (castlingRook != null) {
-                            castlingRook.setIcon(null);
-                            castlingRook.piece = null;
-                            castlingRook.pieceColor = null;
-                            castlingRook.moved = true;
-                           Chessboard.pieceLocations.remove((Integer) castlingRook.tileCoordinate);
-                            Chessboard.pieceLocations.add(castlingRook.tileCoordinate + diff);
-                        } else {
-                            System.out.println("Castling rook is NULL!!!!");
-                        }
-
-                        castlingKing.setIcon(null);
-                        castlingKing.piece = null;
-                        castlingKing.pieceColor = null;
-                        castlingKing.moved = true;
-                        Chessboard.pieceLocations.remove((Integer) castlingKing.tileCoordinate);
-
-                        if (diff == 3) {
-                            if (kingCord == 60) {
-                                Chessboard.pieceLocations.add(58);
-                            } else if (kingCord == 4) {
-                                Chessboard.pieceLocations.add(2);
-                            }
-                        } else { // dif = -2
-                            if (kingCord == 60) {
-                                Chessboard.pieceLocations.add(62);
-                            } else if (kingCord == 4) {
-                                Chessboard.pieceLocations.add(6);
-                            }
-                        }
-
-                        castled = true;
+                    if (lastTile.pieceColor.equals("white")) {
+                        kingCord = 60;
+                    } else if (lastTile.pieceColor.equals("black")) {
+                        kingCord = 4;
                     }
-                }
 
-                // =================================================================================================
-                if (!castled) {
+                    Tile castlingKing = Chessboard.tileList.get(kingCord); // king that is casting
+                    Tile castlingRook = Chessboard.tileList.get(tileCoordinate); // rook that is casting
+
+                    if (tileCoordinate == 56 || tileCoordinate == 0) {
+                        diff = 3;
+                        newRookCord = kingCord - 1;
+                        newKingCord = kingCord - 2;
+                    } else if (tileCoordinate == 63 || tileCoordinate == 7) {
+                        diff = - 2;
+                        newRookCord = kingCord + 1;
+                        newKingCord = kingCord + 2;
+                    }
+
+                    Chessboard.tileList.get(newRookCord).piece = "rook";
+                    Chessboard.tileList.get(newRookCord).pieceColor = color;
+                    try {
+                        Chessboard.tileList.get(newRookCord).setImage("rook");
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                    Chessboard.tileList.get(newKingCord).piece = "king";
+                    Chessboard.tileList.get(newKingCord).pieceColor = color;
+                    try {
+                        Chessboard.tileList.get(newKingCord).setImage("king");
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                    if (castlingRook != null) {
+                        castlingRook.setIcon(null);
+                        castlingRook.piece = null;
+                        castlingRook.pieceColor = null;
+                        castlingRook.moved = true;
+                        Chessboard.pieceLocations.remove((Integer) castlingRook.tileCoordinate);
+                        Chessboard.pieceLocations.add(castlingRook.tileCoordinate + diff);
+                    } else {
+                        System.out.println("Castling rook is NULL!!!!");
+                    }
+
+                    castlingKing.setIcon(null);
+                    castlingKing.piece = null;
+                    castlingKing.pieceColor = null;
+                    castlingKing.moved = true;
+                    Chessboard.pieceLocations.remove((Integer) castlingKing.tileCoordinate);
+
+                    if (diff == 3) {
+                        if (kingCord == 60) {
+                            Chessboard.pieceLocations.add(58);
+                        } else if (kingCord == 4) {
+                            Chessboard.pieceLocations.add(2);
+                        }
+                    } else { // dif = -2
+                        if (kingCord == 60) {
+                            Chessboard.pieceLocations.add(62);
+                        } else if (kingCord == 4) {
+                            Chessboard.pieceLocations.add(6);
+                        }
+                    }
+                } else {
                     try {
                         this.setImage(lastPiece);
                     } catch (IOException ex) {

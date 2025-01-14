@@ -7,6 +7,8 @@ import java.util.ArrayList;
 public class King implements Piece {
     ArrayList<Integer> threatenList = new ArrayList<>();
 
+    boolean castled = false;
+
     @Override
     public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor, boolean clickedKing) {
         // north
