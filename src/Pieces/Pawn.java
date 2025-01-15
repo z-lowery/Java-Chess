@@ -58,10 +58,10 @@ public class Pawn extends Piece implements PieceInterface {
 
         // White pawn
         } else if (pieceColor.equals("white") && pieceCoordinate > 7) {
-            if (!inLeftColumn(pieceCoordinate)) {
+            if (!inRightColumn(pieceCoordinate)) {
                 checkIfOccupied(pieceCoordinate + TILE_NORTH_OFFSET + 1, pieceColor); // Check northeast tile
             }
-            if (!inRightColumn(pieceCoordinate)) {
+            if (!inLeftColumn(pieceCoordinate)) {
                 checkIfOccupied(pieceCoordinate + TILE_NORTH_OFFSET - 1, pieceColor); // Check northwest tile
             }
         }
