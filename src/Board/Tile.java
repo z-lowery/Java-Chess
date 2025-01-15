@@ -304,11 +304,18 @@ public class Tile extends JButton implements ActionListener {
     }
 
 
+    /**
+     * Highlights the tiles on the chessboard based on the moves of a given piece. It handles special cases for pawns, 
+     * which have different movement and capture rules compared to other pieces. Tiles are highlighted in magenta if 
+     * they are valid move destinations and in red if they contain an enemy piece. Friendly pieces' tiles are not highlighted.
+     *
+     * @param piece - the type of the piece to calculate moves for (e.g., "rook", "bishop", "queen", etc.).
+     * @param location - the current location of the piece on the board.
+     * @param pieceColor - the color of the piece (e.g., "white", "black").
+     */
     public void highlightTiles(String piece, int location, String pieceColor){
-        /* 
-        * Creates a list of tiles that can be highlighted based on how a piece on the clicked tile moves
-        * by calling that pieces' respective calcMoves() method.
-        */
+        
+        //Grabs a list of tiles that to be highlighted based on the piece's calcMoves() method.
         ArrayList<Integer> tilesToHighlight = calcMovesOfPiece(piece, location, pieceColor);
 
         // Highlights all tiles based on the tile state and the piece's color
