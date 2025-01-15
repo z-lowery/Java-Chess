@@ -65,17 +65,17 @@ public class Tile extends JButton implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+
         /* DEBUG HELPER
          * The following print statements are used to help debug 
-         * the program by printing out information about the tile
+         * the program by printing out information about the clicked tile
          */
-
         //System.out.println("Tile location: " + location);
         //System.out.println("moved = " + moved);
-        System.out.println("black threatened = " + blackThreatened);
-        System.out.println("white threatened = " + whiteThreatened);
-        System.out.println("piece color = " + pieceColor); 
-        System.out.println("===================\n");
+        //System.out.println("black threatened = " + blackThreatened);
+        //System.out.println("white threatened = " + whiteThreatened);
+        //System.out.println("piece color = " + pieceColor); 
+        //System.out.println("===================\n");
 
         /* 
          * If the tile clicked on is NOT highlighted. This would mean that you clicked on
@@ -89,7 +89,7 @@ public class Tile extends JButton implements ActionListener {
              */
             lastCord = this.location;
 
-            // Sets clickedKing variable to true if the tile that was clicked on has a king on it
+            // Calculate threats on the board if the tile that was clicked on has a king on it
             if (this.piece != null) {
                 if (this.piece.equals("king")) {
                     calcThreats();
@@ -105,88 +105,10 @@ public class Tile extends JButton implements ActionListener {
                 Tile lastTile = Chessboard.tileList.get(lastCord); // tile that was clicked on before the current tile
 
                 // Handles the case when a king is castling
-                if (lastTile.piece != null && piece != null && lastTile.piece.equals("king") && piece.equals("rook")) {
-                    int diff = 64; // Variable to store the difference between the king and rook tile coordinates
-                    int newRookCord = 64, newKingCord = 64; // Set values to impossible tile coordinates
-                    int kingCord = lastCord; // Location of the king that is castling
-                    String pieceColor = lastTile.pieceColor; // Color of the pieces that are castling
-
-                    Tile kingCastling = Chessboard.tileList.get(lastCord); // King that is castling
-                    Tile rookCastling = Chessboard.tileList.get(location); // Rook that is castling
-
-                    // Determines the locations of the rook and king after castling
-                    if (location == 56 || location == 0) {
-                        diff = 3; // Castling to the left
-                        newRookCord = kingCord - 1;
-                        newKingCord = kingCord - 2;
-                    } else if (location == 63 || location == 7) {
-                        diff = -2; // Castling to the right
-                        newRookCord = kingCord + 1;
-                        newKingCord = kingCord + 2;
-                    }
-
-                    /* 
-                     * Set the icons, piece, & piece color of the tiles that will be occupied by the king
-                     * and rook after castling 
-                     */
-                    try {
-                        Chessboard.tileList.get(newRookCord).piece = "rook";
-                        Chessboard.tileList.get(newRookCord).pieceColor = pieceColor;
-                        Chessboard.tileList.get(newRookCord).setImage("rook");
-
-                        Chessboard.tileList.get(newKingCord).piece = "king";
-                        Chessboard.tileList.get(newKingCord).pieceColor = pieceColor;
-                        Chessboard.tileList.get(newKingCord).setImage("king");
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-
-                    // Remove the old king and rook from the board
-                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(rookCastling.location)); // Remove the old location of the rook
-                    Chessboard.pieceLocations.add(rookCastling.location + diff); // Add the new location of the rook
-                    resetTileValues(rookCastling);
-
-                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(kingCastling.location)); // Remove the old location of the king
-                    resetTileValues(kingCastling);
-
-                    // Add the new location of the king based off of the difference between the king and rook
-                    if (diff == 3) { // Castling to the left
-                        Chessboard.pieceLocations.add(kingCord - 2);
-                    } else if(diff == -2) { // Castling to the right
-                        Chessboard.pieceLocations.add(kingCord + 2);
-                    }
-                } 
-                
-                // Handles any other case where a piece is moving 
-                else {
-                    // Set the icon of the tile that the piece is moving to
-                    try {
-                        this.setImage(lastTile.piece);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-
-                    /* 
-                     * This will update the piece location list to accommodate the piece moving. 
-                     * If you are taking a piece, then a piece is still on that tile so no addition 
-                     * needs to be made. Just a removal of the tile that the piece is moving from.
-                     */
-                    if (this.getBackground() == Color.magenta) {
-                        Chessboard.pieceLocations.add(this.location);
-                    }
-                    Chessboard.pieceLocations.remove((Integer) lastCord); // Remove the location of the tile the piece was moved from
-
-                    /*
-                     * Piece moves by taking the information from the last tile the piece is moving from
-                     * and moving it to the new tile that was clicked on (where the piece is moving to).
-                    */
-                    this.setIcon(lastTile.getIcon());
-                    this.piece = lastTile.piece;
-                    this.pieceColor = lastTile.pieceColor;                    
-                    this.moved = true;
-
-                    // reset lastTile variables
-                    resetTileValues(lastTile);
+                if (lastTile.piece != null && this.piece != null && lastTile.piece.equals("king") && this.piece.equals("rook")) {
+                    castle(lastTile);
+                } else { // Handles any other case where a piece is moving 
+                    movePiece(lastTile);
                 }
             } else {
                 throw new RuntimeException("THERE WAS AN ERROR! The tile that was just clicked on was " +
@@ -216,7 +138,7 @@ public class Tile extends JButton implements ActionListener {
     /**
      * Determines what tiles are threatened by white and black pieces, modifying the tile's
      * "whiteThreatened" and "blackThreatened" variables respectively. This is used to
-     * determine where a kings can move on the board. 
+     * determine where kings can move on the board. 
      */
     public void calcThreats() {
         clearThreats(); // Clears the current threats on the board
@@ -274,6 +196,43 @@ public class Tile extends JButton implements ActionListener {
         }
     }
 
+    /**
+     * Calculates the moves of a piece by calling the calcMoves() method of the respective piece class. The method
+     * returns a list of tiles that the piece can move to / is threatening. 
+     * 
+     * @param piece - the piece that is having the calculation done
+     * @param location - the location of the piece on the board
+     * @param pieceColor - the color of the piece
+     * @return - a list of tiles that the piece can move to / is threatening. 
+     */
+     public ArrayList<Integer> calcMovesOfPiece(String piece, int location, String pieceColor) {
+        ArrayList<Integer> moveList = new ArrayList<>(0);
+
+        // Calls the calcMoves() method of the respective piece class to obtain a list of tiles that the piece can move to
+        if (piece != null) {
+            switch (piece) {
+            case "rook":
+                moveList = new Rook().calcMoves(location, pieceColor);
+                break;
+            case "knight":
+                moveList = new Knight().calcMoves(location, pieceColor);
+                break;
+            case "bishop":
+                moveList = new Bishop().calcMoves(location, pieceColor);
+                break;
+            case "queen":
+                moveList = new Queen().calcMoves(location, pieceColor);
+                break;
+            case "king":
+                moveList = new King().calcMoves(location, pieceColor);
+                break;
+            case "pawn":
+                moveList = new Pawn().calcMoves(location, pieceColor);
+                break;
+            }
+        }
+        return moveList;
+    }
 
     /**
      * Highlights the tiles on the chessboard based on the moves of a given piece. It handles special cases for pawns, 
@@ -332,9 +291,106 @@ public class Tile extends JButton implements ActionListener {
     }
 
     /**
+     * Moves a piece from the specified last tile to the current tile by doing the following:
+     * 
+     * 1. Sets the icon of the current tile to the piece on the last clicked tile.
+     * 2. Updates the piece location list to accommodate the piece moving.
+     *    - If the piece is taking another piece, no addition is made to the list.
+     *    - Else, removes the location of the tile the piece was moved from.
+     * 3. Moves the piece by transferring the information from the last clicked tile to the current tile.
+     * 4. Resets the variables of the last clicked tile.
+     * 
+     * @param lastTile - the tile from which the piece is moving.
+     * @throws RuntimeException if there is an error setting the image of the piece.
+     */
+    public void movePiece(Tile lastTile) throws RuntimeException{
+        // Set the icon of the tile that the piece is moving to
+        try {
+            this.setImage(lastTile.piece);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        /* 
+        * This will update the piece location list to accommodate the piece moving. 
+        * If you are taking a piece, then a piece is still on that tile so no addition 
+        * needs to be made. Just a removal of the tile that the piece is moving from.
+        */
+        if (this.getBackground() == Color.magenta) {
+            Chessboard.pieceLocations.add(this.location);
+        }
+        Chessboard.pieceLocations.remove((Integer) lastCord); // Remove the location of the tile the piece was moved from
+
+        /*
+        * Piece moves by taking the information from the last tile the piece is moving from
+        * and moving it to the new tile that was clicked on (where the piece is moving to).
+        */
+        this.setIcon(lastTile.getIcon());
+        this.piece = lastTile.piece;
+        this.pieceColor = lastTile.pieceColor;                    
+        this.moved = true;
+
+        // reset lastTile variables
+        resetTileValues(lastTile);
+    }
+
+    
+    public void castle(Tile lastTile){
+        int diff = 64; // Variable to store the difference between the king and rook tile coordinates
+        int newRookCord = 64, newKingCord = 64; // Set values to impossible tile coordinates
+        int kingCord = lastCord; // Location of the king that is castling
+        String pieceColor = lastTile.pieceColor; // Color of the pieces that are castling
+
+        Tile kingCastling = Chessboard.tileList.get(lastCord); // King that is castling
+        Tile rookCastling = Chessboard.tileList.get(location); // Rook that is castling
+
+        // Determines the locations of the rook and king after castling
+        if (location == 56 || location == 0) {
+            diff = 3; // Castling to the left
+            newRookCord = kingCord - 1;
+            newKingCord = kingCord - 2;
+        } else if (location == 63 || location == 7) {
+            diff = -2; // Castling to the right
+            newRookCord = kingCord + 1;
+            newKingCord = kingCord + 2;
+        }
+
+        /* 
+            * Set the icons, piece, & piece color of the tiles that will be occupied by the king
+            * and rook after castling 
+            */
+        try {
+            Chessboard.tileList.get(newRookCord).piece = "rook";
+            Chessboard.tileList.get(newRookCord).pieceColor = pieceColor;
+            Chessboard.tileList.get(newRookCord).setImage("rook");
+
+            Chessboard.tileList.get(newKingCord).piece = "king";
+            Chessboard.tileList.get(newKingCord).pieceColor = pieceColor;
+            Chessboard.tileList.get(newKingCord).setImage("king");
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        // Remove the old king and rook from the board
+        Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(rookCastling.location)); // Remove the old location of the rook
+        Chessboard.pieceLocations.add(rookCastling.location + diff); // Add the new location of the rook
+        resetTileValues(rookCastling);
+
+        Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(kingCastling.location)); // Remove the old location of the king
+        resetTileValues(kingCastling);
+
+        // Add the new location of the king based off of the difference between the king and rook
+        if (diff == 3) { // Castling to the left
+            Chessboard.pieceLocations.add(kingCord - 2);
+        } else if(diff == -2) { // Castling to the right
+            Chessboard.pieceLocations.add(kingCord + 2);
+        }
+    }
+    /**
      * Determines if targetTile is in front of a pawn. This is used to determine the state
      * of the targetTile given its location relative to the pawn. See the calcMoves() method
      * in the pawn class for more information as this method is built around that method.
+     * 
      * @param tileWithPawn - the tile the pawn is on
      * @param threatenedTile - the tile the pawn is moving to
      * @return - true if the target tile is in front of the pawn, false otherwise
@@ -350,45 +406,10 @@ public class Tile extends JButton implements ActionListener {
             }
     } 
 
-    /**
-     * Calculates the moves of a piece by calling the calcMoves() method of the respective piece class. The method
-     * returns a list of tiles that the piece can move to / is threatening. 
-     * @param piece - the piece that is having the calculation done
-     * @param location - the location of the piece on the board
-     * @param pieceColor - the color of the piece
-     * @return - a list of tiles that the piece can move to / is threatening. 
-     */
-    public ArrayList<Integer> calcMovesOfPiece(String piece, int location, String pieceColor) {
-        ArrayList<Integer> moveList = new ArrayList<>(0);
-
-        // Calls the calcMoves() method of the respective piece class to obtain a list of tiles that the piece can move to
-        if (piece != null) {
-            switch (piece) {
-            case "rook":
-                moveList = new Rook().calcMoves(location, pieceColor);
-                break;
-            case "knight":
-                moveList = new Knight().calcMoves(location, pieceColor);
-                break;
-            case "bishop":
-                moveList = new Bishop().calcMoves(location, pieceColor);
-                break;
-            case "queen":
-                moveList = new Queen().calcMoves(location, pieceColor);
-                break;
-            case "king":
-                moveList = new King().calcMoves(location, pieceColor);
-                break;
-            case "pawn":
-                moveList = new Pawn().calcMoves(location, pieceColor);
-                break;
-            }
-        }
-        return moveList;
-    }
 
     /**
      * Resets the tile by setting the icon, piece, and piece color to null. The moved variable is set to true.
+     * 
      * @param tile - the tile that is being reset
      */
     public void resetTileValues(Tile tile){
@@ -415,8 +436,10 @@ public class Tile extends JButton implements ActionListener {
             }
         }
     }
+   
     /**
      * Sets the image of the piece on the tile. The image is set based on the piece's color and type.
+     * 
      * @param label - the type of piece that is on the tile
      * @throws IOException - if the image file is not found
      */
@@ -432,6 +455,7 @@ public class Tile extends JButton implements ActionListener {
 
     /**
      * Resizes the image of the piece on the tile to fit the tile. The image is resized to 50x50 pixels.
+     * 
      * @param filePath - the file path of the image
      * @return - the resized image
      * @throws IOException - if the image file is not found
