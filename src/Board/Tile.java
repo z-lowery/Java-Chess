@@ -82,7 +82,7 @@ public class Tile extends JButton implements ActionListener {
          * an empty tile OR a different piece to move.
          */ 
         if (!this.highlighted) {
-            resetTileHighlights(); // resets the tile colors by clearing highlighted tiles.
+            resetTileHighlights(); // Resets the tile colors by clearing highlighted tiles.
             /* 
              * In the case that the user clicked on a different piece to move, it is important to store the below
              * data in case the next tile the user clicked on IS highlighted as these variables will be used.
@@ -115,8 +115,8 @@ public class Tile extends JButton implements ActionListener {
                         "labeled as being highlighted, but the background isn't one of the two " +
                         "colors it should be.");
             }
-            lastCord = 64; // reset last tile coordinate by setting it to an impossible value
-            resetTileHighlights(); // remove all highlights from tiles 
+            lastCord = 64; // Reset last tile coordinate by setting it to an impossible value
+            resetTileHighlights(); // Remove all highlights from tiles 
         }
         /* DEBUG HELPER
         for (int i = 0; i < Chessboard.tileList.size(); i++) {
@@ -291,14 +291,8 @@ public class Tile extends JButton implements ActionListener {
     }
 
     /**
-     * Moves a piece from the specified last tile to the current tile by doing the following:
-     * 
-     * 1. Sets the icon of the current tile to the piece on the last clicked tile.
-     * 2. Updates the piece location list to accommodate the piece moving.
-     *    - If the piece is taking another piece, no addition is made to the list.
-     *    - Else, removes the location of the tile the piece was moved from.
-     * 3. Moves the piece by transferring the information from the last clicked tile to the current tile.
-     * 4. Resets the variables of the last clicked tile.
+     * Handles logic for moving a piece from the last tile that was clicked on 
+     * to the current tile.
      * 
      * @param lastTile - the tile from which the piece is moving.
      * @throws RuntimeException if there is an error setting the image of the piece.
@@ -334,14 +328,17 @@ public class Tile extends JButton implements ActionListener {
         resetTileValues(lastTile);
     }
 
-    
-    public void castle(Tile lastTile){
+    /**
+     * Handles the logic for a king castling.
+     * 
+     * @param kingCastling - the tile containing the king that is castling.
+     */
+    public void castle(Tile kingCastling){
         int diff = 64; // Variable to store the difference between the king and rook tile coordinates
         int newRookCord = 64, newKingCord = 64; // Set values to impossible tile coordinates
         int kingCord = lastCord; // Location of the king that is castling
-        String pieceColor = lastTile.pieceColor; // Color of the pieces that are castling
+        String pieceColor = kingCastling.pieceColor; // Color of the pieces that are castling
 
-        Tile kingCastling = Chessboard.tileList.get(lastCord); // King that is castling
         Tile rookCastling = Chessboard.tileList.get(location); // Rook that is castling
 
         // Determines the locations of the rook and king after castling
@@ -386,6 +383,7 @@ public class Tile extends JButton implements ActionListener {
             Chessboard.pieceLocations.add(kingCord + 2);
         }
     }
+    
     /**
      * Determines if targetTile is in front of a pawn. This is used to determine the state
      * of the targetTile given its location relative to the pawn. See the calcMoves() method
