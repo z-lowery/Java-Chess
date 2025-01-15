@@ -48,6 +48,7 @@ public class Bishop extends Piece implements PieceInterface {
 
     /**
      * Checks if a tile contains an enemy king
+     * 
      * @param pieceCoordinate - location of the rook
      * @param tileCoordinate - location of the tile being checked
      * @return true if the tile contains an enemy king, false otherwise

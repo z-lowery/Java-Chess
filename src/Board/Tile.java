@@ -20,7 +20,6 @@ import javax.imageio.ImageIO;
  * color.
  */
 public class Tile extends JButton implements ActionListener {
-    // Every tile has the following:
     public final int location; // Stores the location of the tile. Final = var can't be changed after first being set
     public boolean isTan; // Used to set and store the color of the tile. Used to construct board and clear highlights.
 
@@ -60,7 +59,8 @@ public class Tile extends JButton implements ActionListener {
 
     /**
      * This method is called when the tile is clicked on. It will respond to the user's actions by highlighting
-     * tiles that the piece on the tile can move to or moving the piece to a new tile.
+     * tiles that the piece on the tile can move to or by moving the piece to a new tile.
+     * 
      * @param e - the action event that is triggered when the tile is clicked on
      */
     @Override
@@ -82,21 +82,18 @@ public class Tile extends JButton implements ActionListener {
          * an empty tile OR a different piece to move.
          */ 
         if (!this.highlighted) {
-            resetTileHighlights(); // Resets the tile colors by clearing highlighted tiles.
             /* 
              * In the case that the user clicked on a different piece to move, it is important to store the below
-             * data in case the next tile the user clicked on IS highlighted as these variables will be used.
+             * data in case the next tile the user clicked on IS highlighted as this variable will be used to move the piece.
              */
             lastCord = this.location;
 
-            // Calculate threats on the board if the tile that was clicked on has a king on it
-            if (this.piece != null) {
-                if (this.piece.equals("king")) {
-                    calcThreats();
-                }
+            if (this.piece != null && this.piece.equals("king")) { // Calculate threats on the board if the tile that was clicked on has a king on it
+                calcThreats();
             }
 
-            highlightTiles(this.piece, this.location, this.pieceColor);
+            resetTileHighlights(); // Resets the tile colors by clearing highlighted tiles.
+            highlightTiles(this.piece, this.location, this.pieceColor); // Highlight tiles based on the piece's movement
         } 
         
         // If the tile that was clicked on IS highlighted, then the piece will move to that tile, possibly capturing a piece
@@ -104,19 +101,20 @@ public class Tile extends JButton implements ActionListener {
             if (this.getBackground() == Color.magenta || this.getBackground() == Color.RED) { // Error handling 
                 Tile lastTile = Chessboard.tileList.get(lastCord); // tile that was clicked on before the current tile
 
-                // Handles the case when a king is castling
+                // Handles the case when a king is castling or any other case where a piece is moving
                 if (lastTile.piece != null && this.piece != null && lastTile.piece.equals("king") && this.piece.equals("rook")) {
-                    castle(lastTile);
-                } else { // Handles any other case where a piece is moving 
-                    movePiece(lastTile);
+                    castle(lastTile); // King castling
+                } else {  
+                    movePiece(lastTile); // Piece moving
                 }
+
             } else {
                 throw new RuntimeException("THERE WAS AN ERROR! The tile that was just clicked on was " +
                         "labeled as being highlighted, but the background isn't one of the two " +
                         "colors it should be.");
             }
-            lastCord = 64; // Reset last tile coordinate by setting it to an impossible value
-            resetTileHighlights(); // Remove all highlights from tiles 
+            lastCord = -1; // Reset last tile coordinate by setting it to an impossible value
+            resetTileHighlights(); // Resets the tile colors by clearing highlighted tiles.
         }
         /* DEBUG HELPER
         for (int i = 0; i < Chessboard.tileList.size(); i++) {
