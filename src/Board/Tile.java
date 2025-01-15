@@ -118,10 +118,10 @@ public class Tile extends JButton implements ActionListener {
                          */
                         if(isPawn){
                             // If the target tile is in front of the pawn
-                            if(pawnForward(this, targetTile)){ 
+                            if(pawnForward(this, targetTile) && targetTile.piece == null){ 
                                 targetTile.setBackground(Color.magenta);
                             // If the target tile is diagonal to the pawn and has an enemy piece
-                            } else if (targetTile.piece != null) { 
+                            } else if (!pawnForward(this, targetTile) && targetTile.piece != null) { 
                                 targetTile.setBackground(Color.red);
                             }
                         }

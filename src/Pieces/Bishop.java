@@ -4,8 +4,7 @@ import Board.Chessboard;
 
 import java.util.ArrayList;
 
-public class Bishop implements Piece{
-    ArrayList<Integer> threatenList = new ArrayList<>();
+public class Bishop extends Piece implements PieceInterface {
 
     @Override
      public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {

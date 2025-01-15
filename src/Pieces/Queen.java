@@ -2,7 +2,7 @@ package Pieces;
 
 import java.util.ArrayList;
 
-public class Queen implements Piece{
+public class Queen extends Piece implements PieceInterface{
     Rook rook = new Rook();
     Bishop bishop = new Bishop();
 

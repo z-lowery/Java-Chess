@@ -3,10 +3,7 @@ package Pieces;
 import Board.Chessboard;
 import java.util.ArrayList;
 
-public class Rook implements Piece {
-    ArrayList<Integer> threatenList = new ArrayList<>();
-    boolean moved = false;
-
+public class Rook extends Piece implements PieceInterface {
     @Override
     public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         int temp;

@@ -3,8 +3,7 @@ package Pieces;
 import Board.Chessboard;
 import java.util.ArrayList;
 
-public class Knight implements Piece{
-    ArrayList<Integer> threatenList = new ArrayList<>();
+public class Knight extends Piece implements PieceInterface{
 
     @Override
     public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
