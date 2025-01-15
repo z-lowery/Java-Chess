@@ -19,25 +19,25 @@ public class Pawn extends Piece implements PieceInterface {
          * The following code handles the front movement of the pawn for the first and subsequent turns
          */
 
-        // If the pawn is black
+        // Black pawn
         ifStatement: if (pieceColor.equals("black") && pieceCoordinate < 56) {
-            if (checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET, pieceColor)) { // Check tile in front of the pawn
+            if (checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET, pieceColor)) { // Check tile in front of the pawn
                 break ifStatement;
             }
 
             // If in its starting row, check tile two spaces in front of the pawn
             if (pieceCoordinate > 7 && pieceCoordinate < 16) { // "if the pawn is in the second row"
-                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET*2, pieceColor); // Square two spaces in front of the pawn
+                checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET*2, pieceColor); // Square two spaces in front of the pawn
             }
         
-        // If the pawn is white
+        // White pawn
         } else if ((pieceColor.equals("white") && pieceCoordinate > 7)) {
-            if (checkIfOccupied(pieceCoordinate - TILE_FORWARD_OFFSET, pieceColor)) {
+            if (checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET, pieceColor)) {
                 break ifStatement;
             }
             // if in its starting row
             if (pieceCoordinate < 64 && pieceCoordinate > 47) { // "if the pawn is in the second to last row"
-                checkIfOccupied(pieceCoordinate - TILE_FORWARD_OFFSET*2, pieceColor); // square in front of the pawn
+                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET*2, pieceColor); // square in front of the pawn
             }
         }
 
@@ -48,21 +48,22 @@ public class Pawn extends Piece implements PieceInterface {
          * tiles there is a check. If a diagonal tile has a piece on it, highlight it red, else, not. Not
          * highlighting it means the pawn can not move to that square. See the Tile class lines 88-127 for more info.
          */
-        // black pawn
+        // Black pawn
         if (pieceColor.equals("black") && pieceCoordinate < 56) {
             if (pieceCoordinate % 8 != 0) {
-                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET - 1, pieceColor); // Check southwest tile
+                checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET - 1, pieceColor); // Check southwest tile
             }
             if ((pieceCoordinate - 7) % 8 != 0) {
-                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET + 1, pieceColor); // Check southeast tile
+                checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET + 1, pieceColor); // Check southeast tile
             }
-        // white pawn
+
+        // White pawn
         } else if (pieceColor.equals("white") && pieceCoordinate > 7) {
             if (pieceCoordinate % 8 != 0) {
-                checkIfOccupied(pieceCoordinate - TILE_FORWARD_OFFSET + 1, pieceColor); // Check northwest tile
+                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET + 1, pieceColor); // Check northeast tile
             }
             if ((pieceCoordinate - 7) % 8 != 0) {
-                checkIfOccupied(pieceCoordinate - TILE_FORWARD_OFFSET - 1, pieceColor); // Check northeast tile
+                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET - 1, pieceColor); // Check northwest tile
             }
         }
         return threatenList;
