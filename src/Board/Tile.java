@@ -82,8 +82,7 @@ public class Tile extends JButton implements ActionListener {
          * an empty tile OR a different piece to move.
          */ 
         if (!this.highlighted) {
-            resetTileColors(); // resets the tile colors by clearing highlighted tiles.
-
+            resetTileHighlights(); // resets the tile colors by clearing highlighted tiles.
             /* 
              * In the case that the user clicked on a different piece to move, it is important to store the below
              * data in case the next tile the user clicked on IS highlighted as these variables will be used.
@@ -97,56 +96,7 @@ public class Tile extends JButton implements ActionListener {
                 }
             }
 
-            /* 
-             * Creates a list of tiles that can be highlighted based on how a piece on the clicked tile moves
-             * by calling that pieces' respective calcMoves() method.
-             */
-            ArrayList<Integer> highlightTiles = calcMovesOfPiece(this.piece, this.location, this.pieceColor);
-
-            // Stores the color of the piece that was clicked on to determine what pieces it can capture
-            String pieceColor = this.pieceColor;
-
-            // Highlights all tiles based on the tile state and the piece's color
-            String lastTilePiece = null; // stores what the previous targetTile's piece was. This is relevant only for rooks and bishops.
-            if (piece != null) {
-                for (int i = 0; i < highlightTiles.size(); i++) {
-                    Tile targetTile = Chessboard.tileList.get(highlightTiles.get(i));
-
-                    boolean isRookBishopQueen = (this.piece.equals("rook") || this.piece.equals("bishop") || this.piece.equals("queen"));
-                    if(!(isRookBishopQueen && (!(lastTilePiece == null) && lastTilePiece.equals("king")))){
-                        if (targetTile.pieceColor != pieceColor) { // if the target tile is a friendly piece, then we don't highlight it
-                            
-                                boolean isPawn = this.piece.equals("pawn"); // checks if the piece is a pawn
-                                /* 
-                                * Handles the case when the piece clicked on is a pawn. This is done because
-                                * pawns capture and move to different tiles on the board. This is unlike other pieces
-                                * that capture and move to the same tiles.
-                                */
-                                if(isPawn){
-                                    // If the target tile is in front of the pawn
-                                    if(pawnForward(this, targetTile) && targetTile.piece == null){ 
-                                        targetTile.setBackground(Color.magenta);
-                                    // If the target tile is diagonal to the pawn and has an enemy piece
-                                    } else if (!pawnForward(this, targetTile) && targetTile.piece != null) { 
-                                        targetTile.setBackground(Color.red);
-                                    }
-                                }                        
-
-                                // Handles any other piece 
-                                else if (targetTile.piece == null) { // "if the tile is empty"
-                                    targetTile.setBackground(Color.magenta);
-                                } else { // if the tile contains an enemy piece
-                                    targetTile.setBackground(Color.red);
-                                }
-
-                                if(targetTile.getBackground() == Color.magenta || targetTile.getBackground() == Color.red){
-                                    targetTile.highlighted = true;
-                                }   
-                            }
-                        }
-                    lastTilePiece = targetTile.piece;
-                }
-            }
+            highlightTiles(this.piece, this.location, this.pieceColor);
         } 
         
         // If the tile that was clicked on IS highlighted, then the piece will move to that tile, possibly capturing a piece
@@ -194,10 +144,10 @@ public class Tile extends JButton implements ActionListener {
                     // Remove the old king and rook from the board
                     Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(rookCastling.location)); // Remove the old location of the rook
                     Chessboard.pieceLocations.add(rookCastling.location + diff); // Add the new location of the rook
-                    resetTile(rookCastling);
+                    resetTileValues(rookCastling);
 
                     Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(kingCastling.location)); // Remove the old location of the king
-                    resetTile(kingCastling);
+                    resetTileValues(kingCastling);
 
                     // Add the new location of the king based off of the difference between the king and rook
                     if (diff == 3) { // Castling to the left
@@ -236,7 +186,7 @@ public class Tile extends JButton implements ActionListener {
                     this.moved = true;
 
                     // reset lastTile variables
-                    resetTile(lastTile);
+                    resetTileValues(lastTile);
                 }
             } else {
                 throw new RuntimeException("THERE WAS AN ERROR! The tile that was just clicked on was " +
@@ -244,7 +194,7 @@ public class Tile extends JButton implements ActionListener {
                         "colors it should be.");
             }
             lastCord = 64; // reset last tile coordinate by setting it to an impossible value
-            resetTileColors(); // remove all highlights from tiles 
+            resetTileHighlights(); // remove all highlights from tiles 
         }
         /* DEBUG HELPER
         for (int i = 0; i < Chessboard.tileList.size(); i++) {
@@ -267,7 +217,7 @@ public class Tile extends JButton implements ActionListener {
      * Resets the tile by setting the icon, piece, and piece color to null. The moved variable is set to true.
      * @param tile - the tile that is being reset
      */
-    public void resetTile(Tile tile){
+    public void resetTileValues(Tile tile){
         tile.setIcon(null);
         tile.piece = null;
         tile.pieceColor = null;
@@ -277,7 +227,7 @@ public class Tile extends JButton implements ActionListener {
     /**
      * Resets the colors of all the tiles on the board. This is used to clear the highlights of the tiles
      */
-    public void resetTileColors() {
+    public void resetTileHighlights() {
         Tile tile;
         for (int i = 0; i < Chessboard.tileList.size(); i++) {
             tile = Chessboard.tileList.get(i);
@@ -289,14 +239,6 @@ public class Tile extends JButton implements ActionListener {
                     tile.setBackground(Color.lightGray);
                 }
             }
-        }
-    }
-
-    /** Resets threatened status' of all tiles on the board */
-    public void clearThreats() {
-        for (Tile tile : Chessboard.tileList) {
-            tile.whiteThreatened = false;
-            tile.blackThreatened = false;
         }
     }
 
@@ -349,6 +291,64 @@ public class Tile extends JButton implements ActionListener {
                 }
             } else {
                 throw new RuntimeException("A tile in pieceLocationList indicates there is no piece on it.");
+            }
+        }
+    }
+
+    /** Resets threatened status' of all tiles on the board */
+    public void clearThreats() {
+        for (Tile tile : Chessboard.tileList) {
+            tile.whiteThreatened = false;
+            tile.blackThreatened = false;
+        }
+    }
+
+
+    public void highlightTiles(String piece, int location, String pieceColor){
+        /* 
+        * Creates a list of tiles that can be highlighted based on how a piece on the clicked tile moves
+        * by calling that pieces' respective calcMoves() method.
+        */
+        ArrayList<Integer> tilesToHighlight = calcMovesOfPiece(piece, location, pieceColor);
+
+        // Highlights all tiles based on the tile state and the piece's color
+        String lastTilePiece = null; // stores what the previous targetTile's piece was. This is relevant only for rooks and bishops.
+        if (piece != null) {
+            for (int i = 0; i < tilesToHighlight.size(); i++) {
+                Tile targetTile = Chessboard.tileList.get(tilesToHighlight.get(i));
+
+                boolean isRookBishopQueen = (this.piece.equals("rook") || this.piece.equals("bishop") || this.piece.equals("queen"));
+                if(!(isRookBishopQueen && (!(lastTilePiece == null) && lastTilePiece.equals("king")))){
+                    if (targetTile.pieceColor != pieceColor) { // if the target tile is a friendly piece, then we don't highlight it
+                        boolean isPawn = this.piece.equals("pawn"); // checks if the piece is a pawn
+                        /* 
+                        * Handles the case when the piece clicked on is a pawn. This is done because
+                        * pawns capture and move to different tiles on the board. This is unlike other pieces
+                        * that capture and move to the same tiles.
+                        */
+                        if(isPawn){
+                            // If the target tile is in front of the pawn
+                            if(pawnForward(this, targetTile) && targetTile.piece == null){ 
+                                targetTile.setBackground(Color.magenta);
+                            // If the target tile is diagonal to the pawn and has an enemy piece
+                            } else if (!pawnForward(this, targetTile) && targetTile.piece != null) { 
+                                targetTile.setBackground(Color.red);
+                            }
+                        }                        
+
+                        // Handles any other piece 
+                        else if (targetTile.piece == null) { // "if the tile is empty"
+                            targetTile.setBackground(Color.magenta);
+                        } else { // if the tile contains an enemy piece
+                            targetTile.setBackground(Color.red);
+                        }
+
+                        if(targetTile.getBackground() == Color.magenta || targetTile.getBackground() == Color.red){
+                            targetTile.highlighted = true;
+                        }   
+                    }
+                }
+                lastTilePiece = targetTile.piece;
             }
         }
     }
