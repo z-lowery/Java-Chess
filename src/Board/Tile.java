@@ -128,7 +128,7 @@ public class Tile extends JButton implements ActionListener {
 
                         // Handles any other piece 
                         else if (targetTile.piece == null) { // "if the tile is empty"
-                                targetTile.setBackground(Color.magenta);
+                            targetTile.setBackground(Color.magenta);
                         } else { // if the tile contains an enemy piece
                             targetTile.setBackground(Color.red);
                         }
@@ -153,8 +153,8 @@ public class Tile extends JButton implements ActionListener {
                     int kingCord = lastCord; // Location of the king that is castling
                     String pieceColor = lastTile.pieceColor; // Color of the pieces that are castling
 
-                    Tile castlingKing = Chessboard.tileList.get(lastCord); // King that is castling
-                    Tile castlingRook = Chessboard.tileList.get(tileCoordinate); // Rook that is castling
+                    Tile kingCastling = Chessboard.tileList.get(lastCord); // King that is castling
+                    Tile rookCastling = Chessboard.tileList.get(tileCoordinate); // Rook that is castling
 
                     // Determines the locations of the rook and king after castling
                     if (tileCoordinate == 56 || tileCoordinate == 0) {
@@ -184,12 +184,12 @@ public class Tile extends JButton implements ActionListener {
                     }
 
                     // Remove the old king and rook from the board
-                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(castlingRook.tileCoordinate)); // Remove the old location of the rook
-                    Chessboard.pieceLocations.add(castlingRook.tileCoordinate + diff); // Add the new location of the rook
-                    resetTile(castlingRook);
+                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(rookCastling.tileCoordinate)); // Remove the old location of the rook
+                    Chessboard.pieceLocations.add(rookCastling.tileCoordinate + diff); // Add the new location of the rook
+                    resetTile(rookCastling);
 
-                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(castlingKing.tileCoordinate)); // Remove the old location of the king
-                    resetTile(castlingKing);
+                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(kingCastling.tileCoordinate)); // Remove the old location of the king
+                    resetTile(kingCastling);
 
                     // Add the new location of the king based off of the difference between the king and rook
                     if (diff == 3) { // Castling to the left
@@ -255,6 +255,10 @@ public class Tile extends JButton implements ActionListener {
 
     }
     
+    /**
+     * Resets the tile by setting the icon, piece, and piece color to null. The moved variable is set to true.
+     * @param tile - the tile that is being reset
+     */
     public void resetTile(Tile tile){
         tile.setIcon(null);
         tile.piece = null;
@@ -262,7 +266,9 @@ public class Tile extends JButton implements ActionListener {
         tile.moved = true;
     }
 
-    // reset all tile colors on the board. Used to clear highlighted tiles.
+    /**
+     * Resets the colors of all the tiles on the board. This is used to clear the highlights of the tiles
+     */
     public void resetTileColors() {
         Tile tile;
         for (int i = 0; i < Chessboard.tileList.size(); i++) {

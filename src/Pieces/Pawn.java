@@ -67,7 +67,7 @@ public class Pawn implements Piece{
     public boolean checkIfOccupied(int tileCoordinate, String pieceColor) {
         // if the tile is empty. Pawns will only be able to move forward if the tile is empty
         Tile targetTile = Chessboard.tileList.get(tileCoordinate);
-        if (targetTile.pieceColor == null) {
+        if (targetTile.piece == null) {
             threatenList.add(tileCoordinate);
             return false;
             // if the tile is not empty
