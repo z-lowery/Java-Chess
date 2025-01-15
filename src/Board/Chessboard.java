@@ -29,7 +29,6 @@ public class Chessboard extends JFrame{
 
         panel = new JPanel(); // Create a JPanel
         panel.setLayout(new GridLayout(ROW_LENGTH, COL_LENGTH)); // Chessboard dimensions
-        panel.setBorder(new LineBorder(Color.red));
         panel.setPreferredSize(new Dimension(450, 450));
 
         frame.add(panel);
@@ -70,7 +69,7 @@ public class Chessboard extends JFrame{
 
                 tileList.add(tile);
                 panel.add(tile);
-                isTan = !isTan; // Car is cycled so that every tile in a row is checkered
+                isTan = !isTan; // Var is cycled so that every tile in a row is checkered
                 tileCoordinate++;
             }
             isTan = !isTan; // Var is cycled so that every tile in a column is checkered
