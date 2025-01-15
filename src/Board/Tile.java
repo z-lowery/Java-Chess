@@ -70,12 +70,12 @@ public class Tile extends JButton implements ActionListener {
          * The following print statements are used to help debug 
          * the program by printing out information about the clicked tile
          */
-        //System.out.println("Tile location: " + location);
+        System.out.println("Tile location: " + location);
         //System.out.println("moved = " + moved);
         //System.out.println("black threatened = " + blackThreatened);
         //System.out.println("white threatened = " + whiteThreatened);
-        //System.out.println("piece color = " + pieceColor); 
-        //System.out.println("===================\n");
+        System.out.println("piece color = " + pieceColor); 
+        System.out.println("===================\n");
 
         /* 
          * If the tile clicked on is NOT highlighted. This would mean that you clicked on
@@ -248,12 +248,13 @@ public class Tile extends JButton implements ActionListener {
 
         // Highlights all tiles based on the tile state and the piece's color
         String lastTilePiece = null; // stores what the previous targetTile's piece was. This is relevant only for rooks and bishops.
+        String lastTileColor = null; // stores what the previous targetTile's piece was. This is relevant only for rooks and bishops.
         if (piece != null) {
             for (int i = 0; i < tilesToHighlight.size(); i++) {
                 Tile targetTile = Chessboard.tileList.get(tilesToHighlight.get(i));
 
                 boolean isRookBishopQueen = (this.piece.equals("rook") || this.piece.equals("bishop") || this.piece.equals("queen"));
-                if(!(isRookBishopQueen && (!(lastTilePiece == null) && lastTilePiece.equals("king")))){
+                if(!(isRookBishopQueen && (!(lastTilePiece == null) && lastTilePiece.equals("king") && !lastTileColor.equals(this.pieceColor)))){
                     if (targetTile.pieceColor != pieceColor) { // if the target tile is a friendly piece, then we don't highlight it
                         boolean isPawn = this.piece.equals("pawn"); // checks if the piece is a pawn
                         /* 
@@ -284,6 +285,7 @@ public class Tile extends JButton implements ActionListener {
                     }
                 }
                 lastTilePiece = targetTile.piece;
+                lastTileColor = targetTile.pieceColor;
             }
         }
     }
@@ -351,9 +353,9 @@ public class Tile extends JButton implements ActionListener {
         }
 
         /* 
-            * Set the icons, piece, & piece color of the tiles that will be occupied by the king
-            * and rook after castling 
-            */
+        * Set the icons, piece, & piece color of the tiles that will be occupied by the king
+        * and rook after castling 
+        */
         try {
             Chessboard.tileList.get(newRookCord).piece = "rook";
             Chessboard.tileList.get(newRookCord).pieceColor = pieceColor;

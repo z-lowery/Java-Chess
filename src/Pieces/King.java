@@ -63,9 +63,8 @@ public class King extends Piece implements PieceInterface {
             int leftRookCord, rightRookCord, kingCord;
 
             kingCord = pieceCoordinate; // coordinate of the king
-
-            leftRookCord = kingCord - 4; // coordinate of the left rook
-            rightRookCord = kingCord + 3; // coordinate of the right rook
+            leftRookCord = kingCord - 3; // coordinate of the left rook
+            rightRookCord = kingCord + 4; // coordinate of the right rook
 
             Tile targetTile = Chessboard.tileList.get(leftRookCord); // left rook tile
             

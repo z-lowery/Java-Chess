@@ -9,8 +9,8 @@ This project is intended to be a fully working Java implementation of the game C
 
 ## Known bugs
 1) In certain instances, an adjacent tile to the king will be incorrectly highlighted (indicating the king can move there) when the enemy king is actually threatening that tile. 
-2) Enemy rooks will be incorrectly highlighted, making it possible to castle at a location where it shouldn't be.
-3) Kings can castle through check
+2) Kings can castle through check
+3) Attempting to move a king after it has castled will result in an error
 
 ## TO-DO
 Personal to-do list
