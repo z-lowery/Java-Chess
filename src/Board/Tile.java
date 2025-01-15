@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
  */
 public class Tile extends JButton implements ActionListener {
     // Every tile has the following:
-    public final int tileCoordinate; // Stores the location of the tile. Final = var can't be changed after first being set
+    public final int location; // Stores the location of the tile. Final = var can't be changed after first being set
     public boolean isTan; // Used to set and store the color of the tile. Used to construct board and clear highlights.
 
     public String piece; // If null, tile does not have a piece on it. Else, string indicates what piece is on the tile
@@ -37,8 +37,8 @@ public class Tile extends JButton implements ActionListener {
     public static int lastCord; // Stores the location fo the last tile clicked on
 
     // Declaration for a tile:
-    public Tile(int tileCoordinate, boolean isTan, String piece, String pieceColor) throws IOException {
-        this.tileCoordinate = tileCoordinate;
+    public Tile(int location, boolean isTan, String piece, String pieceColor) throws IOException {
+        this.location = location;
         this.isTan = isTan;
         this.piece = piece;
         this.pieceColor = pieceColor;
@@ -70,11 +70,12 @@ public class Tile extends JButton implements ActionListener {
          * the program by printing out information about the tile
          */
 
-        /* System.out.println("Tile location: " + tileCoordinate);
-        System.out.println("moved = " + moved);
+        //System.out.println("Tile location: " + location);
+        //System.out.println("moved = " + moved);
         System.out.println("black threatened = " + blackThreatened);
         System.out.println("white threatened = " + whiteThreatened);
-        System.out.println("piece color = " + pieceColor); */
+        System.out.println("piece color = " + pieceColor); 
+        System.out.println("===================\n");
 
         /* 
          * If the tile clicked on is NOT highlighted. This would mean that you clicked on
@@ -87,7 +88,7 @@ public class Tile extends JButton implements ActionListener {
              * In the case that the user clicked on a different piece to move, it is important to store the below
              * data in case the next tile the user clicked on IS highlighted as these variables will be used.
              */
-            lastCord = this.tileCoordinate;
+            lastCord = this.location;
 
             // Sets clickedKing variable to true if the tile that was clicked on has a king on it
             if (this.piece != null) {
@@ -100,43 +101,50 @@ public class Tile extends JButton implements ActionListener {
              * Creates a list of tiles that can be highlighted based on how a piece on the clicked tile moves
              * by calling that pieces' respective calcMoves() method.
              */
-            ArrayList<Integer> highlightTiles = calcMovesOfPiece(this.piece, this.tileCoordinate, this.pieceColor);
+            ArrayList<Integer> highlightTiles = calcMovesOfPiece(this.piece, this.location, this.pieceColor);
 
             // Stores the color of the piece that was clicked on to determine what pieces it can capture
             String pieceColor = this.pieceColor;
 
+            // Highlights all tiles based on the tile state and the piece's color
+            String lastTilePiece = null; // stores what the previous targetTile's piece was. This is relevant only for rooks and bishops.
             if (piece != null) {
                 for (int i = 0; i < highlightTiles.size(); i++) {
                     Tile targetTile = Chessboard.tileList.get(highlightTiles.get(i));
-                    if (targetTile.pieceColor != pieceColor) { // if the target tile is a friendly piece, then we don't highlight it
-                        boolean isPawn = this.piece.equals("pawn"); // checks if the piece is a pawn
 
-                        /* 
-                         * Handles the case when the piece clicked on is a pawn. This is done because
-                         * pawns capture and move to different tiles on the board. This is unlike other pieces
-                         * that capture and move to the same tiles.
-                         */
-                        if(isPawn){
-                            // If the target tile is in front of the pawn
-                            if(pawnForward(this, targetTile) && targetTile.piece == null){ 
-                                targetTile.setBackground(Color.magenta);
-                            // If the target tile is diagonal to the pawn and has an enemy piece
-                            } else if (!pawnForward(this, targetTile) && targetTile.piece != null) { 
-                                targetTile.setBackground(Color.red);
+                    boolean isRookBishopQueen = (this.piece.equals("rook") || this.piece.equals("bishop") || this.piece.equals("queen"));
+                    if(!(isRookBishopQueen && (!(lastTilePiece == null) && lastTilePiece.equals("king")))){
+                        if (targetTile.pieceColor != pieceColor) { // if the target tile is a friendly piece, then we don't highlight it
+                            
+                                boolean isPawn = this.piece.equals("pawn"); // checks if the piece is a pawn
+                                /* 
+                                * Handles the case when the piece clicked on is a pawn. This is done because
+                                * pawns capture and move to different tiles on the board. This is unlike other pieces
+                                * that capture and move to the same tiles.
+                                */
+                                if(isPawn){
+                                    // If the target tile is in front of the pawn
+                                    if(pawnForward(this, targetTile) && targetTile.piece == null){ 
+                                        targetTile.setBackground(Color.magenta);
+                                    // If the target tile is diagonal to the pawn and has an enemy piece
+                                    } else if (!pawnForward(this, targetTile) && targetTile.piece != null) { 
+                                        targetTile.setBackground(Color.red);
+                                    }
+                                }                        
+
+                                // Handles any other piece 
+                                else if (targetTile.piece == null) { // "if the tile is empty"
+                                    targetTile.setBackground(Color.magenta);
+                                } else { // if the tile contains an enemy piece
+                                    targetTile.setBackground(Color.red);
+                                }
+
+                                if(targetTile.getBackground() == Color.magenta || targetTile.getBackground() == Color.red){
+                                    targetTile.highlighted = true;
+                                }   
                             }
                         }
-
-                        // Handles any other piece 
-                        else if (targetTile.piece == null) { // "if the tile is empty"
-                            targetTile.setBackground(Color.magenta);
-                        } else { // if the tile contains an enemy piece
-                            targetTile.setBackground(Color.red);
-                        }
-
-                        if(targetTile.getBackground() == Color.magenta || targetTile.getBackground() == Color.red){
-                            targetTile.highlighted = true;
-                        }
-                    }
+                    lastTilePiece = targetTile.piece;
                 }
             }
         } 
@@ -154,14 +162,14 @@ public class Tile extends JButton implements ActionListener {
                     String pieceColor = lastTile.pieceColor; // Color of the pieces that are castling
 
                     Tile kingCastling = Chessboard.tileList.get(lastCord); // King that is castling
-                    Tile rookCastling = Chessboard.tileList.get(tileCoordinate); // Rook that is castling
+                    Tile rookCastling = Chessboard.tileList.get(location); // Rook that is castling
 
                     // Determines the locations of the rook and king after castling
-                    if (tileCoordinate == 56 || tileCoordinate == 0) {
+                    if (location == 56 || location == 0) {
                         diff = 3; // Castling to the left
                         newRookCord = kingCord - 1;
                         newKingCord = kingCord - 2;
-                    } else if (tileCoordinate == 63 || tileCoordinate == 7) {
+                    } else if (location == 63 || location == 7) {
                         diff = -2; // Castling to the right
                         newRookCord = kingCord + 1;
                         newKingCord = kingCord + 2;
@@ -184,11 +192,11 @@ public class Tile extends JButton implements ActionListener {
                     }
 
                     // Remove the old king and rook from the board
-                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(rookCastling.tileCoordinate)); // Remove the old location of the rook
-                    Chessboard.pieceLocations.add(rookCastling.tileCoordinate + diff); // Add the new location of the rook
+                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(rookCastling.location)); // Remove the old location of the rook
+                    Chessboard.pieceLocations.add(rookCastling.location + diff); // Add the new location of the rook
                     resetTile(rookCastling);
 
-                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(kingCastling.tileCoordinate)); // Remove the old location of the king
+                    Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(kingCastling.location)); // Remove the old location of the king
                     resetTile(kingCastling);
 
                     // Add the new location of the king based off of the difference between the king and rook
@@ -214,7 +222,7 @@ public class Tile extends JButton implements ActionListener {
                      * needs to be made. Just a removal of the tile that the piece is moving from.
                      */
                     if (this.getBackground() == Color.magenta) {
-                        Chessboard.pieceLocations.add(this.tileCoordinate);
+                        Chessboard.pieceLocations.add(this.location);
                     }
                     Chessboard.pieceLocations.remove((Integer) lastCord); // Remove the location of the tile the piece was moved from
 
@@ -286,9 +294,7 @@ public class Tile extends JButton implements ActionListener {
 
     /** Resets threatened status' of all tiles on the board */
     public void clearThreats() {
-        Tile tile;
-        for (int i = 0; i < Chessboard.tileList.size(); i++) {
-            tile = Chessboard.tileList.get(i);
+        for (Tile tile : Chessboard.tileList) {
             tile.whiteThreatened = false;
             tile.blackThreatened = false;
         }
@@ -306,23 +312,22 @@ public class Tile extends JButton implements ActionListener {
          * Update what tiles are being threatened by other pieces by iterating through Chessboard.pieceLocations ArrayList. List
          * stores the locations of all the pieces on the board.
          */
-        for (int i = 0; i < Chessboard.pieceLocations.size(); i++) {
+        for (int pieceCoordinate: Chessboard.pieceLocations) {
             // Stores the tile the piece being looked at is on
-            Tile tile = Chessboard.tileList.get(Chessboard.pieceLocations.get(i));
+            Tile pieceTile = Chessboard.tileList.get(pieceCoordinate);
 
             /*
              * Depending on the color of the piece, the program will calculate and store the locations of the tiles
              * the piece is threatening in the respective arrays
              */
             ArrayList<Integer> threatenedTiles = new ArrayList<>();  // Array to store tiles that are being threatened by a piece
-            if (tile.piece != null) {
+            if (pieceTile.piece != null) {
                 // Calculate the tiles that are threatened by the piece
-                threatenedTiles = calcMovesOfPiece(tile.piece, tile.tileCoordinate, tile.pieceColor);
+                threatenedTiles = calcMovesOfPiece(pieceTile.piece, pieceTile.location, pieceTile.pieceColor);
                 
                 // Update the tiles that are threatened by the piece
-                for (int j = 0; j < threatenedTiles.size(); j++) { // Iterate through the tiles that are threatened by the piece
-                    Tile targetTile = Chessboard.tileList.get(threatenedTiles.get(j));
-                    boolean isPawn = tile.piece.equals("pawn"); // checks if the piece is a pawn
+                for (int threatenedTileLocation : threatenedTiles) { // Iterate through the tiles that are threatened by the piece
+                    Tile threatenedTile = Chessboard.tileList.get(threatenedTileLocation);
 
                     /*
                      * Updates the tiles that are threatened by the piece. If the piece is a pawn, then the program
@@ -330,11 +335,13 @@ public class Tile extends JButton implements ActionListener {
                      * is diagonal to the pawn, then the tile is threatened. If the target tile is in front of the pawn,
                      * then the tile will NOT be threatened by the pawn. This is because pawns can only capture diagonally.
                      */
-                    if ((!isPawn) || !pawnForward(tile, targetTile)) {
-                        if (tile.pieceColor.equals("white")) {
-                            targetTile.whiteThreatened = true;
-                        } else if (tile.pieceColor.equals("black")) {
-                            targetTile.blackThreatened = true;
+                    boolean isPawn = pieceTile.piece.equals("pawn"); // Checks if the piece is a pawn
+                    
+                    if ((!isPawn) || !pawnForward(pieceTile, threatenedTile)) {
+                        if (pieceTile.pieceColor.equals("white")) {
+                            threatenedTile.whiteThreatened = true;
+                        } else if (pieceTile.pieceColor.equals("black")) {
+                            threatenedTile.blackThreatened = true;
                         } else {
                             throw new RuntimeException("The piece color of the tile being looked at is not white or black.");
                         }
@@ -351,14 +358,14 @@ public class Tile extends JButton implements ActionListener {
      * of the targetTile given its location relative to the pawn. See the calcMoves() method
      * in the pawn class for more information as this method is built around that method.
      * @param tileWithPawn - the tile the pawn is on
-     * @param targetTile - the tile the pawn is moving to
+     * @param threatenedTile - the tile the pawn is moving to
      * @return - true if the target tile is in front of the pawn, false otherwise
      */
-    public boolean pawnForward(Tile tileWithPawn, Tile targetTile) {
-            if ((tileWithPawn.tileCoordinate + 8 == targetTile.tileCoordinate)
-            || (tileWithPawn.tileCoordinate + 16 == targetTile.tileCoordinate)
-            || (tileWithPawn.tileCoordinate - 8 == targetTile.tileCoordinate)
-            || (tileWithPawn.tileCoordinate - 16 == targetTile.tileCoordinate)){
+    public boolean pawnForward(Tile tileWithPawn, Tile threatenedTile) {
+            if ((tileWithPawn.location + 8 == threatenedTile.location)
+            || (tileWithPawn.location + 16 == threatenedTile.location)
+            || (tileWithPawn.location - 8 == threatenedTile.location)
+            || (tileWithPawn.location - 16 == threatenedTile.location)){
                 return true;
             } else {
                 return false;
@@ -369,33 +376,33 @@ public class Tile extends JButton implements ActionListener {
      * Calculates the moves of a piece by calling the calcMoves() method of the respective piece class. The method
      * returns a list of tiles that the piece can move to / is threatening. 
      * @param piece - the piece that is having the calculation done
-     * @param tileCoordinate - the location of the piece on the board
+     * @param location - the location of the piece on the board
      * @param pieceColor - the color of the piece
      * @return - a list of tiles that the piece can move to / is threatening. 
      */
-    public ArrayList<Integer> calcMovesOfPiece(String piece, int tileCoordinate, String pieceColor) {
+    public ArrayList<Integer> calcMovesOfPiece(String piece, int location, String pieceColor) {
         ArrayList<Integer> moveList = new ArrayList<>(0);
 
         // Calls the calcMoves() method of the respective piece class to obtain a list of tiles that the piece can move to
         if (piece != null) {
             switch (piece) {
             case "rook":
-                moveList = new Rook().calcMoves(tileCoordinate, pieceColor);
+                moveList = new Rook().calcMoves(location, pieceColor);
                 break;
             case "knight":
-                moveList = new Knight().calcMoves(tileCoordinate, pieceColor);
+                moveList = new Knight().calcMoves(location, pieceColor);
                 break;
             case "bishop":
-                moveList = new Bishop().calcMoves(tileCoordinate, pieceColor);
+                moveList = new Bishop().calcMoves(location, pieceColor);
                 break;
             case "queen":
-                moveList = new Queen().calcMoves(tileCoordinate, pieceColor);
+                moveList = new Queen().calcMoves(location, pieceColor);
                 break;
             case "king":
-                moveList = new King().calcMoves(tileCoordinate, pieceColor);
+                moveList = new King().calcMoves(location, pieceColor);
                 break;
             case "pawn":
-                moveList = new Pawn().calcMoves(tileCoordinate, pieceColor);
+                moveList = new Pawn().calcMoves(location, pieceColor);
                 break;
             }
         }

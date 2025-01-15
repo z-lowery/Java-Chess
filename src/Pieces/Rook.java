@@ -1,80 +1,63 @@
 package Pieces;
 
 import Board.Chessboard;
+import Board.Tile;
+
 import java.util.ArrayList;
 
 public class Rook extends Piece implements PieceInterface {
+
     @Override
     public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         int temp;
 
-        // calc north moves
+        // Calc north moves
         temp = pieceCoordinate;
-        while (temp > 7) {
-            temp -= 8;
-            if (checkIfOccupied(temp, pieceColor)) {
+        while (!inFirstRow(temp)) {
+            temp += TILE_NORTH_OFFSET;
+            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
                 break;
             }
         }
 
-        // calc east moves
+        // Calc east moves
         temp = pieceCoordinate;
-        while ((temp-7) % 8 != 0) {
-            temp++;
-            if (checkIfOccupied(temp, pieceColor)) {
+        while (!inRightColumn(temp)) {
+            temp += TILE_EAST_OFFSET;
+            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
                 break;
             }
         }
 
-        // calc west moves
+        // Calc west moves
         temp = pieceCoordinate;
-        while (temp % 8 != 0) {
-            temp--;
-            if (checkIfOccupied(temp, pieceColor)) {
+        while (!inLeftColumn(temp)) {
+            temp += TILE_WEST_OFFSET;
+            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
                 break;
             }
         }
 
-        // calc south moves
+        // Calc south moves
         temp = pieceCoordinate;
-        while (temp < 56) {
-            temp += 8;
-            if (checkIfOccupied(temp, pieceColor)) {
+        while (!inLastRow(temp)) {
+            temp += TILE_SOUTH_OFFSET;
+            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
                 break;
             } 
         }
         return threatenList;
     }
 
-    public boolean checkIfOccupied(int tileCoordinate, String pieceColor) {
-        // if the tile is empty
-        if (Chessboard.tileList.get(tileCoordinate).pieceColor == null) {
-            threatenList.add(tileCoordinate);
-            return false;
-            // if the tile is not empty
-        } else {
-            // if the piece on the tile is an enemy
-            if (Chessboard.tileList.get(tileCoordinate).pieceColor != pieceColor) {
-                threatenList.add(tileCoordinate);
-
-                /*
-                 in the case that a king was clicked on, you still want to threaten squares "past" the king, so
-                 we pretend that the king is not there. This code is only here for the rook & bishop as they have
-                 continuous movement
-                 */
-                if (Chessboard.tileList.get(tileCoordinate).piece.equals("king")) {
-                    return false;
-                }
-            // if the piece on the tile is a friendly piece
-            } else {
-                if (pieceColor.equals("white")) {
-                    Chessboard.tileList.get(tileCoordinate).whiteThreatened = true;
-                } else {
-                    Chessboard.tileList.get(tileCoordinate).blackThreatened = true;
-                }
-
-            }
-            return true;
-        }
+    /**
+     * Checks if a tile contains an enemy king
+     * @param pieceCoordinate - location of the rook
+     * @param tileCoordinate - location of the tile being checked
+     * @return true if the tile contains an enemy king, false otherwise
+     */
+    public boolean checkEnemyKing(int pieceCoordinate, int tileCoordinate){
+        Tile tile = Chessboard.tileList.get(tileCoordinate);
+        Tile piece = Chessboard.tileList.get(pieceCoordinate);
+        return (tile.piece.equals("king")) && !(tile.pieceColor == piece.pieceColor);
     }
 }

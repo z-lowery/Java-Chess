@@ -16,10 +16,4 @@ public class Queen extends Piece implements PieceInterface{
 
         return highlightList;
     }
-
-    // this will not be used by the queen as she just uses the rook and bishop ones
-    @Override
-    public boolean checkIfOccupied(int tileCoordinate, String pieceColor) {
-        return false;
-    }
 }

@@ -1,6 +1,5 @@
 package Pieces;
 
-import Board.*;
 import java.util.ArrayList;
 
 public class Pawn extends Piece implements PieceInterface {
@@ -20,24 +19,24 @@ public class Pawn extends Piece implements PieceInterface {
          */
 
         // Black pawn
-        ifStatement: if (pieceColor.equals("black") && pieceCoordinate < 56) {
-            if (checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET, pieceColor)) { // Check tile in front of the pawn
+        ifStatement: if (pieceColor.equals("black") && !inLastRow(pieceCoordinate)) {
+            if (checkIfOccupied(pieceCoordinate + TILE_SOUTH_OFFSET, pieceColor)) { // Check tile in front of the pawn
                 break ifStatement;
             }
 
             // If in its starting row, check tile two spaces in front of the pawn
             if (pieceCoordinate > 7 && pieceCoordinate < 16) { // "if the pawn is in the second row"
-                checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET*2, pieceColor); // Square two spaces in front of the pawn
+                checkIfOccupied(pieceCoordinate + TILE_SOUTH_OFFSET*2, pieceColor); // Check square two spaces in front of the pawn
             }
         
         // White pawn
-        } else if ((pieceColor.equals("white") && pieceCoordinate > 7)) {
-            if (checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET, pieceColor)) {
+        } else if ((pieceColor.equals("white") && !inFirstRow(pieceCoordinate))) {
+            if (checkIfOccupied(pieceCoordinate + TILE_NORTH_OFFSET, pieceColor)) {
                 break ifStatement;
             }
             // if in its starting row
             if (pieceCoordinate < 64 && pieceCoordinate > 47) { // "if the pawn is in the second to last row"
-                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET*2, pieceColor); // square in front of the pawn
+                checkIfOccupied(pieceCoordinate + TILE_NORTH_OFFSET*2, pieceColor); // Check square in front of the pawn
             }
         }
 
@@ -50,43 +49,22 @@ public class Pawn extends Piece implements PieceInterface {
          */
         // Black pawn
         if (pieceColor.equals("black") && pieceCoordinate < 56) {
-            if (pieceCoordinate % 8 != 0) {
-                checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET - 1, pieceColor); // Check southwest tile
+            if (!inLeftColumn(pieceCoordinate)) {
+                checkIfOccupied(pieceCoordinate + TILE_SOUTH_OFFSET - 1, pieceColor); // Check southwest tile
             }
-            if ((pieceCoordinate - 7) % 8 != 0) {
-                checkIfOccupied(pieceCoordinate + TILE_BACKWARD_OFFSET + 1, pieceColor); // Check southeast tile
+            if (!inRightColumn(pieceCoordinate)) {
+                checkIfOccupied(pieceCoordinate + TILE_SOUTH_OFFSET + 1, pieceColor); // Check southeast tile
             }
 
         // White pawn
         } else if (pieceColor.equals("white") && pieceCoordinate > 7) {
-            if (pieceCoordinate % 8 != 0) {
-                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET + 1, pieceColor); // Check northeast tile
+            if (!inLeftColumn(pieceCoordinate)) {
+                checkIfOccupied(pieceCoordinate + TILE_NORTH_OFFSET + 1, pieceColor); // Check northeast tile
             }
-            if ((pieceCoordinate - 7) % 8 != 0) {
-                checkIfOccupied(pieceCoordinate + TILE_FORWARD_OFFSET - 1, pieceColor); // Check northwest tile
+            if (!inRightColumn(pieceCoordinate)) {
+                checkIfOccupied(pieceCoordinate + TILE_NORTH_OFFSET - 1, pieceColor); // Check northwest tile
             }
         }
         return threatenList;
-    }
-
-    /**
-     * Checks if a tile is occupied. If so, it will add the tile to the threaten list if the piece on the tile is an enemy
-     * @param tileCoordinate - the coordinate of the tile
-     * @param pieceColor - the color of the piece
-     * @return - true if the tile is occupied, false otherwise
-     */
-    @Override
-    public boolean checkIfOccupied(int tileCoordinate, String pieceColor) {
-        // if the tile is empty. Pawns will only be able to move forward if the tile is empty
-        Tile targetTile = Chessboard.tileList.get(tileCoordinate);
-        if (targetTile.piece == null) {
-            threatenList.add(tileCoordinate);
-            return false;
-        } else { // if the tile is not empty but contains an enemy piece
-            if (!targetTile.pieceColor.equals(pieceColor)) {
-                threatenList.add(tileCoordinate);
-            }
-            return true;
-        }
     }
 }

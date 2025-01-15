@@ -8,41 +8,57 @@ public class King extends Piece implements PieceInterface {
 
     @Override
     public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
-        // north
-        if (pieceCoordinate > 7) {
-            checkIfOccupied(pieceCoordinate - 8, pieceColor);
+        // North
+        if (!inFirstRow(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_NORTH_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_NORTH_OFFSET, pieceColor);
+            }
         }
-        // north-east
-        if (pieceCoordinate > 7 && (pieceCoordinate + 1) % 8 != 0) {
-            checkIfOccupied(pieceCoordinate - 7, pieceColor);
+        // North-east
+        if (!inFirstRow(pieceCoordinate) && !inRightColumn(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_NORTHEAST_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_NORTHEAST_OFFSET, pieceColor);
+            }
         }
-        // east
-        if ((pieceCoordinate - 7) % 8 != 0) {
-            checkIfOccupied(pieceCoordinate + 1, pieceColor);
+        // East
+        if (!inRightColumn(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_EAST_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_EAST_OFFSET, pieceColor);
+            }
         }
-        // south-east
-        if (pieceCoordinate < 56 && ((pieceCoordinate - 7) % 8 != 0)) {
-            checkIfOccupied(pieceCoordinate + 9, pieceColor);
+        // South-east
+        if (!inLastRow(pieceCoordinate) && !inRightColumn(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_SOUTHEAST_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_SOUTHEAST_OFFSET, pieceColor);
+            }
         }
-        // south
-        if (pieceCoordinate < 56) {
-            checkIfOccupied(pieceCoordinate + 8, pieceColor);
+        // South
+        if (!inLastRow(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_SOUTH_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_SOUTH_OFFSET, pieceColor);
+            }
         }
-        // south-west
-        if (pieceCoordinate < 56 && (pieceCoordinate) % 8 != 0) {
-            checkIfOccupied(pieceCoordinate + 7, pieceColor);
+        // South-west
+        if (!inLastRow(pieceCoordinate) && !inLeftColumn(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_SOUTHWEST_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_SOUTHWEST_OFFSET, pieceColor);
+            }
         }
-        // west
-        if (pieceCoordinate % 8 != 0) {
-            checkIfOccupied(pieceCoordinate - 1, pieceColor);
+        // West
+        if (!inLeftColumn(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_WEST_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_WEST_OFFSET, pieceColor);
+            }
         }
-        // north-west
-        if (pieceCoordinate > 7 && (pieceCoordinate) % 8 != 0) {
-            checkIfOccupied(pieceCoordinate - 9, pieceColor);
+        // North-west
+        if (!inFirstRow(pieceCoordinate) && !inLeftColumn(pieceCoordinate)) {
+            if (!threatenedByEnemy(pieceCoordinate + TILE_NORTHWEST_OFFSET, pieceColor)) {
+                checkIfOccupied(pieceCoordinate + TILE_NORTHWEST_OFFSET, pieceColor);
+            }
         }
 
-        // castling
-        // if the king has not moved
+        // Castling
+        // If the king has not moved
         if (!Chessboard.tileList.get(pieceCoordinate).moved) {
             int leftRookCord, rightRookCord, kingCord;
 
@@ -101,31 +117,11 @@ public class King extends Piece implements PieceInterface {
         Chessboard.tileList.get(rookCoordinate).setBackground(Color.magenta);
     }
 
-    @Override
-    public boolean checkIfOccupied(int tileCoordinate, String pieceColor) {
-        Tile targetTile = Chessboard.tileList.get(tileCoordinate);
-
-        // if the tile is empty
-        if (targetTile.pieceColor == null) {
-            if (!targetTile.whiteThreatened && pieceColor.equals("black")) { // if tile is not threatened by white and the king is black
-                threatenList.add(tileCoordinate);
-            }
-
-            if (!targetTile.blackThreatened && pieceColor.equals("white")) { // if tile is not threatened by black and the king is white
-                threatenList.add(tileCoordinate);
-            }
-            return false;
-            // if the tile is not empty
+    public boolean threatenedByEnemy(int tileCoordinate, String pieceColor){
+        if(pieceColor.equals("white")){
+            return Chessboard.tileList.get(tileCoordinate).blackThreatened;
         } else {
-            // if the piece on the tile is an enemy
-            if (!targetTile.whiteThreatened && pieceColor.equals("black")) { // if tile is not threatened by white and the king is black
-                threatenList.add(tileCoordinate);
-            }
-
-            if (!targetTile.blackThreatened && pieceColor.equals("white")) { // if tile is not threatened by black and the king is white
-                threatenList.add(tileCoordinate);
-            }
-            return true;
+            return Chessboard.tileList.get(tileCoordinate).whiteThreatened;
         }
     }
 }
