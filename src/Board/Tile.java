@@ -212,35 +212,6 @@ public class Tile extends JButton implements ActionListener {
         */
 
     }
-    
-    /**
-     * Resets the tile by setting the icon, piece, and piece color to null. The moved variable is set to true.
-     * @param tile - the tile that is being reset
-     */
-    public void resetTileValues(Tile tile){
-        tile.setIcon(null);
-        tile.piece = null;
-        tile.pieceColor = null;
-        tile.moved = true;
-    }
-
-    /**
-     * Resets the colors of all the tiles on the board. This is used to clear the highlights of the tiles
-     */
-    public void resetTileHighlights() {
-        Tile tile;
-        for (int i = 0; i < Chessboard.tileList.size(); i++) {
-            tile = Chessboard.tileList.get(i);
-            if (tile.getBackground() == Color.magenta || tile.getBackground() == Color.RED) {
-                tile.highlighted = false;
-                if (tile.isTan) {
-                    tile.setBackground(new Color(252, 211, 154)); // tan color
-                } else {
-                    tile.setBackground(Color.lightGray);
-                }
-            }
-        }
-    }
 
     /**
      * Determines what tiles are threatened by white and black pieces, modifying the tile's
@@ -416,6 +387,34 @@ public class Tile extends JButton implements ActionListener {
         return moveList;
     }
 
+    /**
+     * Resets the tile by setting the icon, piece, and piece color to null. The moved variable is set to true.
+     * @param tile - the tile that is being reset
+     */
+    public void resetTileValues(Tile tile){
+        tile.setIcon(null);
+        tile.piece = null;
+        tile.pieceColor = null;
+        tile.moved = true;
+    }
+
+    /**
+     * Resets the colors of all the tiles on the board. This is used to clear the highlights of the tiles
+     */
+    public void resetTileHighlights() {
+        Tile tile;
+        for (int i = 0; i < Chessboard.tileList.size(); i++) {
+            tile = Chessboard.tileList.get(i);
+            if (tile.getBackground() == Color.magenta || tile.getBackground() == Color.RED) {
+                tile.highlighted = false;
+                if (tile.isTan) {
+                    tile.setBackground(new Color(252, 211, 154)); // tan color
+                } else {
+                    tile.setBackground(Color.lightGray);
+                }
+            }
+        }
+    }
     /**
      * Sets the image of the piece on the tile. The image is set based on the piece's color and type.
      * @param label - the type of piece that is on the tile
