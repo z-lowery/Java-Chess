@@ -231,7 +231,7 @@ public class Tile extends JButton implements ActionListener {
                     resetTile(lastTile);
                 }
             } else {
-                System.out.println("THERE WAS AN ERROR! The tile that was just clicked on was " +
+                throw new RuntimeException("THERE WAS AN ERROR! The tile that was just clicked on was " +
                         "labeled as being highlighted, but the background isn't one of the two " +
                         "colors it should be.");
             }
@@ -278,7 +278,7 @@ public class Tile extends JButton implements ActionListener {
         }
     }
 
-    // resets threatened status of all tiles on the board
+    /** Resets threatened status' of all tiles on the board */
     public void clearThreats() {
         Tile tile;
         for (int i = 0; i < Chessboard.tileList.size(); i++) {
@@ -288,100 +288,120 @@ public class Tile extends JButton implements ActionListener {
         }
     }
 
-    /*
-    method that calculates ALL threats on the board from both white and black pieces for the purposes of
-    determining where the kings can move
+    /**
+     * Determines what tiles are threatened by white and black pieces, modifying the tile's
+     * "whiteThreatened" and "blackThreatened" variables respectively. This is used to
+     * determine where a kings can move on the board. 
      */
     public void calcThreats() {
-        clearThreats(); // clears the current threats on the board
+        clearThreats(); // Clears the current threats on the board
 
         /*
-         update what tiles are being threatened by other pieces by iterating through Chessboard.pieceLocations ArrayList. List
-         stores the locations of all the pieces on the board.
+         * Update what tiles are being threatened by other pieces by iterating through Chessboard.pieceLocations ArrayList. List
+         * stores the locations of all the pieces on the board.
          */
         for (int i = 0; i < Chessboard.pieceLocations.size(); i++) {
-            // arrays to store tiles that are threatened by either color
-            ArrayList<Integer> whiteThreatenedTiles = new ArrayList<>();
-            ArrayList<Integer> blackThreatenedTiles = new ArrayList<>();
-
-            // saves the tile the current piece being looked at is on
+            // Stores the tile the piece being looked at is on
             Tile tile = Chessboard.tileList.get(Chessboard.pieceLocations.get(i));
 
             /*
-            depending on the color of the piece, the program will calculate and store the locations of the tiles
-            the piece is threatening in the respective arrays
+             * Depending on the color of the piece, the program will calculate and store the locations of the tiles
+             * the piece is threatening in the respective arrays
              */
-            if (tile.pieceColor != null) {
-                if (tile.pieceColor.equals("white")) {
-                    whiteThreatenedTiles.addAll(calcMovesOfPiece(tile.piece, tile.tileCoordinate, tile.pieceColor));
-                } else if (tile.pieceColor.equals("black")) {
-                    blackThreatenedTiles.addAll(calcMovesOfPiece(tile.piece, tile.tileCoordinate, tile.pieceColor));
-                }
+            ArrayList<Integer> threatenedTiles = new ArrayList<>();  // Array to store tiles that are being threatened by a piece
+            if (tile.piece != null) {
+                // Calculate the tiles that are threatened by the piece
+                threatenedTiles = calcMovesOfPiece(tile.piece, tile.tileCoordinate, tile.pieceColor);
+                
+                // Update the tiles that are threatened by the piece
+                for (int j = 0; j < threatenedTiles.size(); j++) { // Iterate through the tiles that are threatened by the piece
+                    Tile targetTile = Chessboard.tileList.get(threatenedTiles.get(j));
+                    boolean isPawn = tile.piece.equals("pawn"); // checks if the piece is a pawn
 
-                for (int j = 0; j < whiteThreatenedTiles.size(); j++) {
-                    Tile targetTile = Chessboard.tileList.get(whiteThreatenedTiles.get(j));
-                    if ((!tile.piece.equals("pawn")) || !pawnForward(tile, targetTile)) {
-                        targetTile.whiteThreatened = true;
+                    /*
+                     * Updates the tiles that are threatened by the piece. If the piece is a pawn, then the program
+                     * will check if the target tile is in front of the pawn or diagonal to the pawn. If the target tile
+                     * is diagonal to the pawn, then the tile is threatened. If the target tile is in front of the pawn,
+                     * then the tile will NOT be threatened by the pawn. This is because pawns can only capture diagonally.
+                     */
+                    if ((!isPawn) || !pawnForward(tile, targetTile)) {
+                        if (tile.pieceColor.equals("white")) {
+                            targetTile.whiteThreatened = true;
+                        } else if (tile.pieceColor.equals("black")) {
+                            targetTile.blackThreatened = true;
+                        } else {
+                            throw new RuntimeException("The piece color of the tile being looked at is not white or black.");
+                        }
                     }
                 }
-                for (int j = 0; j < blackThreatenedTiles.size(); j++) {
-                    Tile targetTile = Chessboard.tileList.get(blackThreatenedTiles.get(j));
-                    if ((!tile.piece.equals("pawn")) || !pawnForward(tile, targetTile)) {
-                        targetTile.blackThreatened = true;
-                    }
-                }
+            } else {
+                throw new RuntimeException("A tile in pieceLocationList indicates there is no piece on it.");
             }
         }
     }
 
-    public boolean pawnForward(Tile tile, Tile targetTile) {
-            if ((tile.tileCoordinate + 8 == targetTile.tileCoordinate)
-            || (tile.tileCoordinate + 16 == targetTile.tileCoordinate)
-            || (tile.tileCoordinate - 8 == targetTile.tileCoordinate)
-            || (tile.tileCoordinate - 16 == targetTile.tileCoordinate)){
+    /**
+     * Determines if targetTile is in front of a pawn. This is used to determine the state
+     * of the targetTile given its location relative to the pawn. See the calcMoves() method
+     * in the pawn class for more information as this method is built around that method.
+     * @param tileWithPawn - the tile the pawn is on
+     * @param targetTile - the tile the pawn is moving to
+     * @return - true if the target tile is in front of the pawn, false otherwise
+     */
+    public boolean pawnForward(Tile tileWithPawn, Tile targetTile) {
+            if ((tileWithPawn.tileCoordinate + 8 == targetTile.tileCoordinate)
+            || (tileWithPawn.tileCoordinate + 16 == targetTile.tileCoordinate)
+            || (tileWithPawn.tileCoordinate - 8 == targetTile.tileCoordinate)
+            || (tileWithPawn.tileCoordinate - 16 == targetTile.tileCoordinate)){
                 return true;
             } else {
                 return false;
             }
     } 
 
-    // calculates the available moves of a piece by calling their calcMoves() method which returns a list of tiles
-    // they are threatening
+    /**
+     * Calculates the moves of a piece by calling the calcMoves() method of the respective piece class. The method
+     * returns a list of tiles that the piece can move to / is threatening. 
+     * @param piece - the piece that is having the calculation done
+     * @param tileCoordinate - the location of the piece on the board
+     * @param pieceColor - the color of the piece
+     * @return - a list of tiles that the piece can move to / is threatening. 
+     */
     public ArrayList<Integer> calcMovesOfPiece(String piece, int tileCoordinate, String pieceColor) {
         ArrayList<Integer> moveList = new ArrayList<>(0);
 
+        // Calls the calcMoves() method of the respective piece class to obtain a list of tiles that the piece can move to
         if (piece != null) {
-            if (piece.equals("rook")) {
-                Rook rook = new Rook();
-                moveList = rook.calcMoves(tileCoordinate, pieceColor);
-            }
-            if (piece.equals("knight")) {
-                Knight knight = new Knight();
-                moveList = knight.calcMoves(tileCoordinate, pieceColor);
-            }
-            if (piece.equals("bishop")) {
-                Bishop bishop = new Bishop();
-                moveList = bishop.calcMoves(tileCoordinate, pieceColor);
-            }
-            if (piece.equals("queen")) {
-                Queen queen = new Queen();
-                moveList = queen.calcMoves(tileCoordinate, pieceColor);
-            }
-            if (piece.equals("king")) {
-                King king = new King();
-                moveList = king.calcMoves(tileCoordinate, pieceColor);
-            }
-            if (piece.equals("pawn")) {
-                Pawn pawn = new Pawn();
-                moveList = pawn.calcMoves(tileCoordinate, pieceColor);
+            switch (piece) {
+            case "rook":
+                moveList = new Rook().calcMoves(tileCoordinate, pieceColor);
+                break;
+            case "knight":
+                moveList = new Knight().calcMoves(tileCoordinate, pieceColor);
+                break;
+            case "bishop":
+                moveList = new Bishop().calcMoves(tileCoordinate, pieceColor);
+                break;
+            case "queen":
+                moveList = new Queen().calcMoves(tileCoordinate, pieceColor);
+                break;
+            case "king":
+                moveList = new King().calcMoves(tileCoordinate, pieceColor);
+                break;
+            case "pawn":
+                moveList = new Pawn().calcMoves(tileCoordinate, pieceColor);
+                break;
             }
         }
         return moveList;
     }
 
-    // method takes in a string called "label" that indicates the piece on the tile and subsequently the icon to use
-    public void setImage (String label) throws IOException {
-        // Gives chess icons to the correct tiles
+    /**
+     * Sets the image of the piece on the tile. The image is set based on the piece's color and type.
+     * @param label - the type of piece that is on the tile
+     * @throws IOException - if the image file is not found
+     */
+    public void setImage (String label) throws IOException {        
         if (label != null) {
             if (pieceColor == "black") {
                 this.setIcon(fitImage("src\\assets\\" + label + "_black.png"));
@@ -391,7 +411,12 @@ public class Tile extends JButton implements ActionListener {
         } 
     }
 
-    // scales the piece image to the center of the tile
+    /**
+     * Resizes the image of the piece on the tile to fit the tile. The image is resized to 50x50 pixels.
+     * @param filePath - the file path of the image
+     * @return - the resized image
+     * @throws IOException - if the image file is not found
+     */
     public Icon fitImage (String filePath) throws IOException {
         // Load the image
         BufferedImage img = ImageIO.read(new File(filePath));
