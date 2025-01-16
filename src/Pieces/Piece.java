@@ -44,4 +44,21 @@ public abstract class Piece {
             return true;
         }
     }
+
+    /**
+     * Checks if a tile contains an enemy king. This is only by pieces with
+     * continuous movement - rooks, bishops, and queens - so that they threaten
+     * the square immediately past the enemy king instead of just stopping at it. 
+     * This is so that a king can't move to a square that would be threatened 
+     * by a piece with continuous movement after the king moves. 
+     * 
+     * @param pieceCoordinate - location of the piece checking
+     * @param tileCoordinate - location of the tile being checked
+     * @return true if the tile contains an enemy king, false otherwise
+     */
+    public boolean checkEnemyKing(int pieceCoordinate, int tileCoordinate){
+        Tile tile = Chessboard.tileList.get(tileCoordinate);
+        Tile piece = Chessboard.tileList.get(pieceCoordinate);
+        return (tile.piece.equals("king")) && !(tile.pieceColor == piece.pieceColor);
+    }
 }

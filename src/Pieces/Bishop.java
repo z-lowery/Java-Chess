@@ -1,8 +1,5 @@
 package Pieces;
 
-import Board.Chessboard;
-import Board.Tile;
-
 import java.util.ArrayList;
 
 public class Bishop extends Piece implements PieceInterface {
@@ -48,18 +45,5 @@ public class Bishop extends Piece implements PieceInterface {
         }
 
         return threatenList;
-    }
-
-    /**
-     * Checks if a tile contains an enemy king
-     * 
-     * @param pieceCoordinate - location of the rook
-     * @param tileCoordinate - location of the tile being checked
-     * @return true if the tile contains an enemy king, false otherwise
-     */
-    public boolean checkEnemyKing(int pieceCoordinate, int tileCoordinate){
-        Tile tile = Chessboard.tileList.get(tileCoordinate);
-        Tile piece = Chessboard.tileList.get(pieceCoordinate);
-        return (tile.piece.equals("king")) && !(tile.pieceColor == piece.pieceColor);
     }
 }
