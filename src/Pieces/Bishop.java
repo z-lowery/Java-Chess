@@ -10,37 +10,41 @@ public class Bishop extends Piece implements PieceInterface {
     @Override
      public ArrayList<Integer> calcMoves(int pieceCoordinate, String pieceColor) {
         int temp;
-        // calc north-east moves
+        // Calc north-east moves
         temp = pieceCoordinate;
         while (temp > 7 && (temp+1) % 8 != 0) {
             temp += TILE_NORTHEAST_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
-                break;
+            if(checkEnemyKing(pieceCoordinate, temp)){
+                if(!inFirstRow(temp + TILE_NORTHEAST_OFFSET)){threatenList.add(temp + TILE_NORTHEAST_OFFSET);}
             }
+            break;
         }
-        // calc south-east moves
+        // Calc south-east moves
         temp = pieceCoordinate;
         while (!inLastRow(temp) && (temp+1) % 8 != 0) {
             temp += TILE_SOUTHEAST_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
-                break;
+            if(checkEnemyKing(pieceCoordinate, temp)){
+                if(!inFirstRow(temp + TILE_SOUTHEAST_OFFSET)){threatenList.add(temp + TILE_SOUTHEAST_OFFSET);}
             }
+            break;
         }
-        // calc south-west moves
+        // Calc south-west moves
         temp = pieceCoordinate;
         while (!inLastRow(temp) && (temp) % 8 != 0) {
             temp += TILE_SOUTHWEST_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
-                break;
+            if(checkEnemyKing(pieceCoordinate, temp)){
+                if(!inFirstRow(temp + TILE_SOUTHWEST_OFFSET)){threatenList.add(temp + TILE_SOUTHWEST_OFFSET);}
             }
+            break;
         }
-        // calc north-west moves
+        // Calc north-west moves
         temp = pieceCoordinate;
         while (temp > 7 && (temp) % 8 != 0) {
             temp += TILE_NORTHWEST_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
-                break;
+            if(checkEnemyKing(pieceCoordinate, temp)){
+                if(!inFirstRow(temp + TILE_NORTHWEST_OFFSET)){threatenList.add(temp + TILE_NORTHWEST_OFFSET);}
             }
+            break;
         }
 
         return threatenList;

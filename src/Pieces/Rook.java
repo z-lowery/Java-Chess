@@ -15,7 +15,10 @@ public class Rook extends Piece implements PieceInterface {
         temp = pieceCoordinate;
         while (!inFirstRow(temp)) {
             temp += TILE_NORTH_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
+            if (checkIfOccupied(temp, pieceColor)) {
+                if(checkEnemyKing(pieceCoordinate, temp)){
+                    if(!inFirstRow(temp + TILE_NORTH_OFFSET)){threatenList.add(temp + TILE_NORTH_OFFSET);}
+                }
                 break;
             }
         }
@@ -24,7 +27,10 @@ public class Rook extends Piece implements PieceInterface {
         temp = pieceCoordinate;
         while (!inRightColumn(temp)) {
             temp += TILE_EAST_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
+            if (checkIfOccupied(temp, pieceColor)) {
+                if(checkEnemyKing(pieceCoordinate, temp)){
+                    if(!inFirstRow(temp + TILE_EAST_OFFSET)){threatenList.add(temp + TILE_EAST_OFFSET);}
+                }
                 break;
             }
         }
@@ -33,7 +39,10 @@ public class Rook extends Piece implements PieceInterface {
         temp = pieceCoordinate;
         while (!inLeftColumn(temp)) {
             temp += TILE_WEST_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
+            if (checkIfOccupied(temp, pieceColor)) {
+                if(checkEnemyKing(pieceCoordinate, temp)){
+                    if(!inFirstRow(temp + TILE_WEST_OFFSET)){threatenList.add(temp + TILE_WEST_OFFSET);}
+                }
                 break;
             }
         }
@@ -42,9 +51,12 @@ public class Rook extends Piece implements PieceInterface {
         temp = pieceCoordinate;
         while (!inLastRow(temp)) {
             temp += TILE_SOUTH_OFFSET;
-            if (checkIfOccupied(temp, pieceColor) && !checkEnemyKing(pieceCoordinate, temp)) {
+            if (checkIfOccupied(temp, pieceColor)) {
+                if(checkEnemyKing(pieceCoordinate, temp)){
+                    if(!inFirstRow(temp + TILE_SOUTH_OFFSET)){threatenList.add(temp + TILE_SOUTH_OFFSET);}
+                }
                 break;
-            } 
+            }
         }
         return threatenList;
     }

@@ -28,7 +28,6 @@ public abstract class Piece {
     /** Returns if the tile is in the left-most column of the chessboard */
     public boolean inLeftColumn(int tileCoordinate){return (tileCoordinate % 8 == 0);}
 
-
     /**
      * Checks if a tile is occupied. If so, it will add the tile to the threaten list if the piece on the tile is an enemy
      * @param tileCoordinate - the coordinate of the tile
@@ -36,14 +35,13 @@ public abstract class Piece {
      * @return - true if the tile is occupied, false otherwise
      */
     public boolean checkIfOccupied(int tileCoordinate, String pieceColor) {
-       // if the tile is empty. Pawns will only be able to move forward if the tile is empty
-       Tile targetTile = Chessboard.tileList.get(tileCoordinate);
-       if (targetTile.piece == null) { // if the tile is empty
-           threatenList.add(tileCoordinate);
-           return false;
-       } else { // if the tile contains a piece
-            threatenList.add(tileCoordinate);
-           return true;
-       }
+        // If the tile is empty. Pawns will only be able to move forward if the tile is empty
+        Tile targetTile = Chessboard.tileList.get(tileCoordinate);
+        threatenList.add(tileCoordinate);
+        if (targetTile.piece == null) { // if the tile is empty
+            return false;
+        } else { // If the tile contains a piece
+            return true;
+        }
     }
 }

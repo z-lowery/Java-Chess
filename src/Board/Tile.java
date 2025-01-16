@@ -70,12 +70,12 @@ public class Tile extends JButton implements ActionListener {
          * The following print statements are used to help debug 
          * the program by printing out information about the clicked tile
          */
-        System.out.println("Tile location: " + location);
+        //System.out.println("Tile location: " + location);
         //System.out.println("moved = " + moved);
         //System.out.println("black threatened = " + blackThreatened);
         //System.out.println("white threatened = " + whiteThreatened);
-        System.out.println("piece color = " + pieceColor); 
-        System.out.println("===================\n");
+        //System.out.println("piece color = " + pieceColor); 
+        //System.out.println("===================\n");
 
         /* 
          * If the tile clicked on is NOT highlighted. This would mean that you clicked on
