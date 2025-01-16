@@ -16,8 +16,8 @@ public abstract class Piece {
     protected static final int TILE_NORTHEAST_OFFSET = -7; // Offset to get the coordinate of a tile to the north-east of another tile
     protected static final int TILE_SOUTHEAST_OFFSET = 9; // Offset to get the coordinate of a tile to the south-east of another tile
 
-    protected static final int TILE_SOUTHWEST_OFFSET = 7; // Offset to get the coordinate of a tile to the south-west of another tile
     protected static final int TILE_NORTHWEST_OFFSET = -9; // Offset to get the coordinate of a tile to the north-west of another tile
+    protected static final int TILE_SOUTHWEST_OFFSET = 7; // Offset to get the coordinate of a tile to the south-west of another tile
 
     /** Returns if the tile is in the first row of the chessboard */
     public boolean inFirstRow(int tileCoordinate){return tileCoordinate < 8;}
@@ -59,6 +59,7 @@ public abstract class Piece {
     public boolean checkEnemyKing(int pieceCoordinate, int tileCoordinate){
         Tile tile = Chessboard.tileList.get(tileCoordinate);
         Tile piece = Chessboard.tileList.get(pieceCoordinate);
-        return (tile.piece.equals("king")) && !(tile.pieceColor == piece.pieceColor);
+        return (!(tile.piece == null) && tile.piece.equals("king")) && !(tile.pieceColor == piece.pieceColor);
     }
+    
 }
