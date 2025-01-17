@@ -273,7 +273,7 @@ public class Tile extends JButton implements ActionListener {
                         }                        
 
                         // Handles any other piece 
-                        else if (targetTile.piece == null) { // "if the tile is empty"
+                        else if (targetTile.piece == null) { // "If the tile is empty"
                             targetTile.setBackground(Color.magenta);
                         } else { // if the tile contains an enemy piece
                             targetTile.setBackground(Color.red);

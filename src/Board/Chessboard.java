@@ -1,7 +1,6 @@
 package Board;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,6 +75,10 @@ public class Chessboard extends JFrame{
         }
     }
 
+    /** 
+     * Returns a list of strings representing the order of that pieces
+     * should be placed on the board.
+     */
     private static Stack<String> getPieces() {
         Stack<String> pieceList = new Stack<String>();
         pieceList.add("rook");
