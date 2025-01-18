@@ -85,27 +85,34 @@ public class King extends Piece implements PieceInterface {
             if (!threatenedByEnemy(kingCord, kingColor)) { // Checks that the king would not be castling out of check
 
                 // Checks if castling to the left is possible. If so, highlight the left rook to indicate it is
-                Tile targetTile = Chessboard.tileList.get(leftRookCord); // Tile containing the left rook
-                if (!targetTile.moved) { // If the left rook has not moved
+                int targetTileCord = leftRookCord; // Cord of the left rook
+                Tile targetTile = Chessboard.tileList.get(targetTileCord); // Tile containing the left rook
 
+                CastleLeft: if (!targetTile.moved) { // If the left rook has not moved
                     // Makes sure the squares between the king and the rook are vacant and not being threatened by enemy pieces
                     for (int i = leftRookCord + 1; i < kingCord; i++) {
-                        targetTile = Chessboard.tileList.get(i);
-                        if (targetTile.piece != null && !threatenedByEnemy(leftRookCord, kingColor)) {
-                            highlightCastlingRook(leftRookCord); // Highlight rook to indicate castling is possible
+                        targetTileCord = i;
+                        targetTile = Chessboard.tileList.get(targetTileCord);
+                        if (targetTile.piece != null || threatenedByEnemy(targetTileCord, kingColor)) {
+                            break CastleLeft;
                         }
                     }
+                    highlightCastlingRook(leftRookCord); // Highlight rook to indicate castling is possible
                 }    
 
                 // Does the same for the right took
-                targetTile = Chessboard.tileList.get(rightRookCord); // Tile containing the right rook
-                if (!targetTile.moved) {
+                targetTileCord = rightRookCord; // Cord of the right rook
+                targetTile = Chessboard.tileList.get(targetTileCord); // Tile containing the right rook
+                
+                CastleRight: if (!targetTile.moved) {
                     for (int i = rightRookCord - 1; i > kingCord; i--) {
-                        targetTile = Chessboard.tileList.get(i);
-                        if (targetTile.piece != null && !threatenedByEnemy(rightRookCord, kingColor)) {
-                            highlightCastlingRook(rightRookCord); 
+                        targetTileCord = i;
+                        targetTile = Chessboard.tileList.get(targetTileCord);
+                        if (targetTile.piece != null || threatenedByEnemy(targetTileCord, kingColor)) {
+                            break CastleRight;
                         }
                     }
+                    highlightCastlingRook(rightRookCord); 
                 }
             }
         }

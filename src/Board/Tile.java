@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
  */
 public class Tile extends JButton implements ActionListener {
     public final int location; // Stores the location of the tile. Final = var can't be changed after first being set
-    public boolean isTan; // Used to set and store the color of the tile. Used to construct board and clear highlights.
+    public final boolean isTan; // Used to set and store the color of the tile. Used to construct board and clear highlights.
 
     public String piece; // If null, tile does not have a piece on it. Else, string indicates what piece is on the tile
     public String pieceColor; // Color of the piece on the tile
@@ -103,7 +103,7 @@ public class Tile extends JButton implements ActionListener {
 
                 // Handles the case when a king is castling or any other case where a piece is moving
                 if (lastTile.piece != null && this.piece != null && lastTile.piece.equals("king") && this.piece.equals("rook")) {
-                    castle(lastTile); // King castling
+                    castle(lastTile, this); // King castling
                 } else {  
                     movePiece(lastTile); // Piece moving
                 }
@@ -332,22 +332,19 @@ public class Tile extends JButton implements ActionListener {
      * Handles the logic for a king castling.
      * 
      * @param kingCastling - the tile containing the king that is castling.
+     * @param rookCastling - the tile containing the rook that is castling. 
      */
-    public void castle(Tile kingCastling){
-        int diff = 64; // Variable to store the difference between the king and rook tile coordinates
+    public void castle(Tile kingCastling, Tile rookCastling){
         int newRookCord = 64, newKingCord = 64; // Set values to impossible tile coordinates
         int kingCord = lastCord; // Location of the king that is castling
+
         String pieceColor = kingCastling.pieceColor; // Color of the pieces that are castling
 
-        Tile rookCastling = Chessboard.tileList.get(location); // Rook that is castling
-
-        // Determines the locations of the rook and king after castling
-        if (location == 56 || location == 0) {
-            diff = 3; // Castling to the left
+        // Determines the locations that the rook and king should be at after castling
+        if (location == 56 || location == 0) { // Castling to the left
             newRookCord = kingCord - 1;
             newKingCord = kingCord - 2;
-        } else if (location == 63 || location == 7) {
-            diff = -2; // Castling to the right
+        } else if (location == 63 || location == 7) { // Castling to the right
             newRookCord = kingCord + 1;
             newKingCord = kingCord + 2;
         }
@@ -370,18 +367,12 @@ public class Tile extends JButton implements ActionListener {
 
         // Remove the old king and rook from the board
         Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(rookCastling.location)); // Remove the old location of the rook
-        Chessboard.pieceLocations.add(rookCastling.location + diff); // Add the new location of the rook
+        Chessboard.pieceLocations.add(newRookCord); // Add the new location of the rook to the pieceLocations list
         resetTileValues(rookCastling);
 
         Chessboard.pieceLocations.remove(Chessboard.pieceLocations.indexOf(kingCastling.location)); // Remove the old location of the king
-        resetTileValues(kingCastling);
-
-        // Add the new location of the king based off of the difference between the king and rook
-        if (diff == 3) { // Castling to the left
-            Chessboard.pieceLocations.add(kingCord - 2);
-        } else if(diff == -2) { // Castling to the right
-            Chessboard.pieceLocations.add(kingCord + 2);
-        }
+        Chessboard.pieceLocations.add(newKingCord); // Add the new location of the king to the pieceLocations list
+        resetTileValues(kingCastling);   
     }
     
     /**
