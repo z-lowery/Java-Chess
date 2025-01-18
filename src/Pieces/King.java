@@ -57,70 +57,82 @@ public class King extends Piece implements PieceInterface {
             }
         }
 
-        // Castling
-        // If the king has not moved
-        if (!Chessboard.tileList.get(pieceCoordinate).moved) {
-            int leftRookCord, rightRookCord, kingCord;
+        checkCastling(pieceCoordinate, pieceColor); // Check if it is possible for the king to castle 
 
-            kingCord = pieceCoordinate; // coordinate of the king
-            leftRookCord = kingCord - 3; // coordinate of the left rook
-            rightRookCord = kingCord + 4; // coordinate of the right rook
-
-            Tile targetTile = Chessboard.tileList.get(leftRookCord); // left rook tile
-            
-            // if the left rook has not moved
-            castleLeft: if (!targetTile.moved) {
-                // makes sure the king would not be castling out of check
-                if (pieceColor.equals("white") && Chessboard.tileList.get(kingCord).blackThreatened
-                        || pieceColor.equals("black") && Chessboard.tileList.get(kingCord).whiteThreatened) {
-                    break castleLeft;
-                }
-
-                // makes sure the squares between the king and the rook are vacant and not being threatened by enemy pieces
-                for (int j = leftRookCord + 1; j < kingCord; j++) {
-                    targetTile = Chessboard.tileList.get(j);
-                    if (targetTile.piece != null
-                            // handles the cases where the enemy is threatening a square between the king and the rook
-                            || (pieceColor.equals("white") && targetTile.blackThreatened)
-                            || (pieceColor.equals("black") && targetTile.whiteThreatened)) {
-                        break castleLeft;
-                    }
-                }
-                highlightCastlingRook(leftRookCord);
-            }
-
-            targetTile = Chessboard.tileList.get(rightRookCord); // right rook tile
-            castleRight: if (!targetTile.moved) {
-                // makes sure the king would not be castling out of check
-                if (pieceColor.equals("white") && Chessboard.tileList.get(kingCord).blackThreatened
-                        || pieceColor.equals("black") && Chessboard.tileList.get(kingCord).whiteThreatened) {
-                    break castleRight;
-                }
-                // makes sure the squares between the king and the rook are vacant and not being threatened by enemy pieces
-                for (int j = rightRookCord - 1; j > kingCord; j--) {
-                    targetTile = Chessboard.tileList.get(j);
-                    if (targetTile.piece != null
-                            || (pieceColor.equals("white") && targetTile.blackThreatened)
-                            || (pieceColor.equals("black") && targetTile.whiteThreatened)) {
-                        break castleRight;
-                    }
-                }
-                highlightCastlingRook(rightRookCord);
-            }
-        }
         return threatenList;
     }
 
-    public void highlightCastlingRook(int rookCoordinate) {
-        Chessboard.tileList.get(rookCoordinate).highlighted = true;
-        Chessboard.tileList.get(rookCoordinate).setBackground(Color.magenta);
+    /**
+     * Checks if the king can castle left and/or right based off the following factors:
+     *      1) The king is not in check
+     *      2) The king and the left and/or right rook have not moved
+     *      3) The space between the king and the rook is vacant and not threatened by an enemy piece 
+     * 
+     * If all conditions are met, the rooks that can castle with the kind will be highlighted. The castling 
+     * process itself is handled in the tile class. 
+     * 
+     * @param pieceCoordinate - coordinate of the tile that the king is on on the board
+     * @param kingColor - color of the king 
+     */
+    public void checkCastling(int pieceCoordinate, String kingColor){
+        if (!Chessboard.tileList.get(pieceCoordinate).moved) { // Check that the king has not moved using the move variable on its tile
+            int leftRookCord, rightRookCord, kingCord;
+
+            kingCord = pieceCoordinate; // Coordinate of the king
+            leftRookCord = kingCord - 3; // Coordinate of the left rook
+            rightRookCord = kingCord + 4; // Coordinate of the right rook
+
+            if (!threatenedByEnemy(kingCord, kingColor)) { // Checks that the king would not be castling out of check
+
+                // Checks if castling to the left is possible. If so, highlight the left rook to indicate it is
+                Tile targetTile = Chessboard.tileList.get(leftRookCord); // Tile containing the left rook
+                if (!targetTile.moved) { // If the left rook has not moved
+
+                    // Makes sure the squares between the king and the rook are vacant and not being threatened by enemy pieces
+                    for (int i = leftRookCord + 1; i < kingCord; i++) {
+                        targetTile = Chessboard.tileList.get(i);
+                        if (targetTile.piece != null && !threatenedByEnemy(leftRookCord, kingColor)) {
+                            highlightCastlingRook(leftRookCord); // Highlight rook to indicate castling is possible
+                        }
+                    }
+                }    
+
+                // Does the same for the right took
+                targetTile = Chessboard.tileList.get(rightRookCord); // Tile containing the right rook
+                if (!targetTile.moved) {
+                    for (int i = rightRookCord - 1; i > kingCord; i--) {
+                        targetTile = Chessboard.tileList.get(i);
+                        if (targetTile.piece != null && !threatenedByEnemy(rightRookCord, kingColor)) {
+                            highlightCastlingRook(rightRookCord); 
+                        }
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Returns if a given tile is threatened by an enemy piece.
+     * 
+     * @param targetTile - tile being checked
+     * @param pieceColor - color of the piece to determine if threatened by an enemy
+     * @return - true if given tile is threatened by an enemy piece, false otherwise
+     */
     public boolean threatenedByEnemy(int tileCoordinate, String pieceColor){
         if(pieceColor.equals("white")){
             return Chessboard.tileList.get(tileCoordinate).blackThreatened;
         } else {
             return Chessboard.tileList.get(tileCoordinate).whiteThreatened;
         }
+    }
+
+    /**
+     * Highlight a rook given its coordinate on the board.
+     * 
+     * @param rookCoordinate - the tile coordinate that the rook is located
+     */
+    public void highlightCastlingRook(int rookCoordinate) {
+        Chessboard.tileList.get(rookCoordinate).highlighted = true;
+        Chessboard.tileList.get(rookCoordinate).setBackground(Color.magenta);
     }
 }
