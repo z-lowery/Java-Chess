@@ -14,3 +14,4 @@ This project is intended to be a fully working Java implementation of the game C
 Personal to-do list
 1) Change piece strings into piece objects 
 2) Implement javafx to replace Jbuttons, Jframes, etc.,
+3) Add missing features
